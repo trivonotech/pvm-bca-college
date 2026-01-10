@@ -459,6 +459,12 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null;
     }
+
+    // 4. Cross-Device Verification
+    match /verification_signals/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
   }
 }`}
                                         </pre>
@@ -482,6 +488,12 @@ service cloud.firestore {
 
     // 3. General Content (Read Public, Write Admin)
     match /{collection}/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // 4. Cross-Device Verification
+    match /verification_signals/{userId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
