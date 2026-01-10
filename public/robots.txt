@@ -14,4 +14,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://pvmbcacollege.com/sitemap.xml
+Sitemap: https://pvm-bca-college.vercel.app/sitemap.xml
