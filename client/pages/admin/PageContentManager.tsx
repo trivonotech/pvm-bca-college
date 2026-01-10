@@ -38,6 +38,14 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                     { key: 'description', label: 'Description', type: 'textarea', default: 'Undergraduate Programs In Business Administration And Science Designed To Develop Practical Skills, Analytical Thinking, And Career Readiness.' },
                     { key: 'hero', label: 'Hero Image (Boy)', type: 'image', default: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&h=400&fit=crop' }
                 ]
+            },
+            {
+                id: 'about_home',
+                title: 'About Institute Section',
+                fields: [
+                    { key: 'about_title', label: 'Section Title', type: 'text', default: 'About Institute' },
+                    { key: 'about_desc', label: 'Description', type: 'textarea', default: 'Our Institute Is Dedicated To Delivering Quality Education Through Well-Structured Academic Programs, Experienced Faculty, And A Student-Focused Learning Environment. We Aim To Build Strong Academic Foundations While Enhancing Practical Skills That Prepare Students For Real-World Challenges.' }
+                ]
             }
         ]
     },

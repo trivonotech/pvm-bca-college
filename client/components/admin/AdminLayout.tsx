@@ -324,7 +324,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                             '/admin/users': 'user_management',
                             '/admin/settings': 'settings',
                             '/admin/seo': 'seo',
-                            '/admin/backup': 'backup'
+                            '/admin/backup': 'backup',
+                            '/admin/system': 'system_health'
                         };
 
                         let hasAccess = true;

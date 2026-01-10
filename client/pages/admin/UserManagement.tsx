@@ -11,7 +11,25 @@ import {
     Check,
     Search,
     Plus,
-    Key
+
+    Key,
+    LayoutDashboard,
+    Calendar,
+    Trophy,
+    School,
+    Dumbbell,
+    Lightbulb,
+    Newspaper,
+    MessageSquare,
+    Mail,
+    Award,
+    Briefcase,
+    BookOpen,
+    Layout,
+    Eye,
+    Settings,
+    Database,
+    Activity
 } from 'lucide-react';
 import { db, firebaseConfig } from '@/lib/firebase';
 import {
@@ -75,19 +93,25 @@ export default function UserManagement() {
     }, []);
 
     const availablePermissions = [
-        { key: 'dashboard', label: 'Dashboard', icon: '📊' },
-        { key: 'events', label: 'Events Management', icon: '📅' },
-        { key: 'students', label: 'Students Management', icon: '👨‍🎓' },
-        { key: 'sports', label: 'Sports Management', icon: '⚽' },
-        { key: 'workshops', label: 'Workshops Management', icon: '🎓' },
-        { key: 'news', label: 'News Management', icon: '📰' },
-        { key: 'faculty', label: 'Faculty Management', icon: '👩‍🏫' },
-        { key: 'achievements', label: 'Achievements Management', icon: '🏆' },
-        { key: 'placements', label: 'Placements Management', icon: '💼' },
-        { key: 'courses', label: 'Courses Management', icon: '📚' },
-        { key: 'visibility', label: 'Section Visibility', icon: '👁️' },
-        { key: 'settings', label: 'Site Settings', icon: '⚙️' },
-        // user_management removed - only Super Admin can access User Management
+        { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { key: 'events', label: 'Events Management', icon: Calendar },
+        { key: 'students', label: 'Students Management', icon: Trophy },
+        { key: 'admissions', label: 'Admissions', icon: School },
+        { key: 'sports', label: 'Sports Management', icon: Dumbbell },
+        { key: 'workshops', label: 'Workshops Management', icon: Lightbulb },
+        { key: 'news', label: 'News Management', icon: Newspaper },
+        { key: 'inquiries', label: 'Inquiries', icon: MessageSquare },
+        { key: 'subscribers', label: 'Subscribers', icon: Mail },
+        { key: 'faculty', label: 'Faculty Management', icon: Users },
+        { key: 'achievements', label: 'Achievements Management', icon: Award },
+        { key: 'placements', label: 'Placements Management', icon: Briefcase },
+        { key: 'courses', label: 'Courses Management', icon: BookOpen },
+        { key: 'pages', label: 'Page Content', icon: Layout },
+        { key: 'visibility', label: 'Section Visibility', icon: Eye },
+        { key: 'settings', label: 'Site Settings', icon: Settings },
+        { key: 'seo', label: 'SEO Manager', icon: Search },
+        { key: 'backup', label: 'Data Backup', icon: Database },
+        { key: 'system_health', label: 'System Health', icon: Activity },
     ];
 
     const resetForm = () => {
@@ -534,7 +558,7 @@ export default function UserManagement() {
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-3">
-                                                                <span className="text-2xl">{permission.icon}</span>
+                                                                <permission.icon className={`w-6 h-6 ${isSelected ? 'text-blue-600' : 'text-gray-400'}`} />
                                                                 <span className={`font-semibold ${isSelected ? 'text-blue-900' : 'text-gray-700'}`}>
                                                                     {permission.label}
                                                                 </span>
