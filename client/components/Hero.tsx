@@ -23,7 +23,7 @@ export function Hero() {
     }, []);
 
     return (
-        <section className="relative w-full min-h-[90vh] bg-[#FDFDFF] overflow-hidden flex flex-col items-center font-sans pt-10 lg:pt-16">
+        <section className="relative w-full min-h-[90vh] bg-[#FDFDFF] overflow-hidden flex flex-col items-center font-sans pt-10 lg:pt-16 mb-[46px]">
             {/* Background Grid */}
             <div className="absolute inset-0 z-0 pointer-events-none"
                 style={{

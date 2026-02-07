@@ -37,7 +37,7 @@ export default function EventHighlights() {
     }
 
     return (
-        <section className="py-16 md:py-24 bg-white">
+        <section className="pt-16 md:pt-24 pb-8 bg-white">
             <div className="max-w-7xl mx-auto px-0 md:px-8">
                 <div className="mb-8 md:mb-12 bg-slate-600 rounded-none md:rounded-3xl overflow-hidden py-6 md:py-10 relative">
                     <div className="px-4 md:px-12">
@@ -70,7 +70,7 @@ export default function EventHighlights() {
                     </div>
                 </div>
 
-                <div className="flex justify-center mb-16 md:mb-24">
+                <div className="flex justify-center mb-0">
                     <button className="flex items-center gap-1 bg-blue-950 hover:bg-blue-900 text-white font-semibold px-10 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <span>View More</span>
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

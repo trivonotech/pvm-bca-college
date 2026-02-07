@@ -1,12 +1,13 @@
 
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Search, Edit, Eye, Save, X, Upload, Layout } from 'lucide-react';
+import { Search, Edit, Eye, Save, X, Upload, Layout, RotateCcw } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { compressImage } from '@/utils/imageUtils';
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from 'react-router-dom';
+import heroIllustration from '@/assets/hero-illustration.png';
 
 // --- Types ---
 interface PageField {
@@ -36,7 +37,15 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 fields: [
                     { key: 'title', label: 'Main Headline', type: 'text', default: 'Education That Builds Capable Professionals' },
                     { key: 'description', label: 'Description', type: 'textarea', default: 'Undergraduate Programs In Business Administration And Science Designed To Develop Practical Skills, Analytical Thinking, And Career Readiness.' },
-                    { key: 'hero', label: 'Hero Image (Boy)', type: 'image', default: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&h=400&fit=crop' }
+                    { key: 'hero', label: 'Hero Image (Boy)', type: 'image', default: heroIllustration }
+                ]
+            },
+            {
+                id: 'about_home',
+                title: 'About Institute Section',
+                fields: [
+                    { key: 'about_title', label: 'Section Title', type: 'text', default: 'About Institute' },
+                    { key: 'about_desc', label: 'Description', type: 'textarea', default: 'Our Institute Is Dedicated To Delivering Quality Education Through Well-Structured Academic Programs, Experienced Faculty, And A Student-Focused Learning Environment.' }
                 ]
             }
         ]
@@ -48,7 +57,8 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 title: 'Hero Section',
                 fields: [
                     { key: 'title', label: 'Page Title', type: 'text', default: 'About Us' },
-                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Building Tomorrow\'s Leaders Through Quality Education And Holistic Development' }
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Building Tomorrow\'s Leaders Through Quality Education And Holistic Development' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
                 ]
             },
             {
@@ -65,8 +75,25 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 id: 'vision_mission',
                 title: 'Vision & Mission',
                 fields: [
+                    { key: 'vision_title', label: 'Vision Section Title', type: 'text', default: 'Our Vision' },
                     { key: 'vision', label: 'Vision Statement', type: 'textarea', default: 'To be a globally recognized institution that shapes future leaders through innovative education, research excellence, and character development, while fostering creativity, critical thinking, and social responsibility.' },
+                    { key: 'mission_title', label: 'Mission Section Title', type: 'text', default: 'Our Mission' },
+                    { key: 'mission_intro', label: 'Mission Intro Text', type: 'text', default: 'The mission of the institution is to:' },
                     { key: 'mission_list', label: 'Mission Points (One per line)', type: 'textarea', default: "Provide quality education with modern teaching methodologies\nDevelop industry-ready professionals with practical skills\nFoster innovation, research, and creative thinking\nBuild strong industry partnerships for placements" }
+                ]
+            },
+            {
+                id: 'achievements',
+                title: 'Achievements & Accreditations',
+                fields: [
+                    { key: 'achievements_title', label: 'Section Title', type: 'text', default: 'Achievements & Accreditations' },
+                    { key: 'achievements_subtitle', label: 'Section Subtitle', type: 'text', default: 'Recognized for excellence and committed to maintaining the highest standards of education' },
+                    { key: 'achievement1_title', label: 'Achievement 1 Title', type: 'text', default: 'Best Institute Award' },
+                    { key: 'achievement1_text', label: 'Achievement 1 Description', type: 'textarea', default: 'Recognized as the Best Educational Institute for Academic Excellence in 2023' },
+                    { key: 'achievement2_title', label: 'Achievement 2 Title', type: 'text', default: 'NAAC Accredited' },
+                    { key: 'achievement2_text', label: 'Achievement 2 Description', type: 'textarea', default: 'Accredited by National Assessment and Accreditation Council with A+ Grade' },
+                    { key: 'achievement3_title', label: 'Achievement 3 Title', type: 'text', default: '100% Placement' },
+                    { key: 'achievement3_text', label: 'Achievement 3 Description', type: 'textarea', default: 'Achieved 100% placement record for the batch 2022-23 with top companies' }
                 ]
             }
         ]
@@ -78,7 +105,8 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 title: 'Hero Section',
                 fields: [
                     { key: 'title', label: 'Page Title', type: 'text', default: 'Contact Us' },
-                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: "Get In Touch With Us - We're Here To Help With Your Queries And Admissions" }
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: "Get In Touch With Us - We're Here To Help With Your Queries And Admissions" },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
                 ]
             }
         ]
@@ -90,7 +118,8 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 title: 'Hero Section',
                 fields: [
                     { key: 'title', label: 'Page Title', type: 'text', default: 'Admissions' },
-                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Start Your Journey Towards A Bright Future - Admission Process Made Simple' }
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Start Your Journey Towards A Bright Future - Admission Process Made Simple' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
                 ]
             }
         ]
@@ -102,7 +131,73 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 title: 'Hero Section',
                 fields: [
                     { key: 'title', label: 'Page Title', type: 'text', default: 'Academics' },
-                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Comprehensive Programs Designed For Industry Readiness And Career Success' }
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Comprehensive Programs Designed For Industry Readiness And Career Success' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            }
+        ]
+    },
+    'page_examination': {
+        sections: [
+            {
+                id: 'hero',
+                title: 'Hero Section',
+                fields: [
+                    { key: 'title', label: 'Page Title', type: 'text', default: 'Examination & Results' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Stay Updated With Examination Schedules, Notices, And Result Announcements' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            }
+        ]
+    },
+    'page_student_life': {
+        sections: [
+            {
+                id: 'hero',
+                title: 'Hero Section',
+                fields: [
+                    { key: 'title', label: 'Page Title', type: 'text', default: 'Student Life' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Experience A Vibrant Campus Life Filled With Learning, Creativity, And Fun' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            }
+        ]
+    },
+    'page_placements': {
+        sections: [
+            {
+                id: 'hero',
+                title: 'Hero Section',
+                fields: [
+                    { key: 'title', label: 'Page Title', type: 'text', default: 'Training & Placements' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Bridging The Gap Between Academia And Industry With Dedicated Career Support' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            }
+        ]
+    },
+    'page_news': {
+        sections: [
+            {
+                id: 'hero',
+                title: 'Hero Section',
+                fields: [
+                    { key: 'title', label: 'Page Title', type: 'text', default: 'News & Updates' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Stay Connected With The Latest Happenings, Events, And Announcements' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            }
+        ]
+    },
+    'page_student_corner': {
+        sections: [
+            {
+                id: 'hero',
+                title: 'Hero Section',
+                fields: [
+                    { key: 'title', label: 'Page Title', type: 'text', default: 'Student Corner' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Access Important Resources, Forms, And Information For Your Academic Journey' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
                 ]
             }
         ]
@@ -113,7 +208,12 @@ const AVAILABLE_PAGES = [
     { id: 'page_home', name: 'Home Page', description: 'Hero, stats, and promotional sections', path: '/' },
     { id: 'page_about', name: 'About Us', description: 'Overview, Vision, and Mission statements', path: '/about' },
     { id: 'page_academics', name: 'Academics', description: 'Program overviews and descriptions', path: '/academics' },
+    { id: 'page_examination', name: 'Examination', description: 'Exam notices and results', path: '/examination' },
     { id: 'page_admissions', name: 'Admissions', description: 'Process details and hero section', path: '/admissions' },
+    { id: 'page_student_life', name: 'Student Life', description: 'Campus activities and events', path: '/student-life' },
+    { id: 'page_placements', name: 'Placements', description: 'Placement records and recruiters', path: '/placements' },
+    { id: 'page_news', name: 'News & Updates', description: 'College news and announcements', path: '/news' },
+    { id: 'page_student_corner', name: 'Student Corner', description: 'Resources and downloads', path: '/student-corner' },
     { id: 'page_contact', name: 'Contact Page', description: 'Headlines and contact information', path: '/contact' }
 ];
 
@@ -341,6 +441,22 @@ export default function PageContentManager() {
                                                                     Click to Upload
                                                                 </div>
                                                             </div>
+                                                            {/* Reset Button */}
+                                                            {(content.images?.[field.key] && content.images?.[field.key] !== field.default) && (
+                                                                <button
+                                                                    onClick={() => setContent(prev => ({
+                                                                        ...prev,
+                                                                        images: {
+                                                                            ...prev.images,
+                                                                            [field.key]: field.default || ''
+                                                                        }
+                                                                    }))}
+                                                                    className="mt-2 text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+                                                                >
+                                                                    <RotateCcw className="w-3 h-3" />
+                                                                    Reset to Default
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>

@@ -39,13 +39,29 @@ export default function AboutPage() {
             <Header />
 
             {isVisible('aboutHero') && (
-                <section className="relative w-full bg-gradient-to-br from-[#0B0B3B] to-[#1a1a5e] text-white py-20 overflow-hidden">
-                    <div className="absolute inset-0 opacity-10"
-                        style={{
-                            backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
-                            backgroundSize: '40px 40px'
-                        }}
-                    />
+                <section className="relative w-full text-white py-20 overflow-hidden">
+                    {content?.images?.hero_bg ? (
+                        <>
+                            <div className="absolute inset-0 z-0">
+                                <img
+                                    src={content.images.hero_bg}
+                                    alt="Hero"
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/60"></div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0B3B] to-[#1a1a5e] z-0">
+                            <div className="absolute inset-0 opacity-10"
+                                style={{
+                                    backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
+                                    backgroundSize: '40px 40px'
+                                }}
+                            />
+                        </div>
+                    )}
+
                     <div className="container mx-auto px-4 relative z-10">
                         <div className="max-w-4xl mx-auto text-center">
                             <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
@@ -72,10 +88,10 @@ export default function AboutPage() {
 
                             <div className="grid md:grid-cols-2 gap-12 items-center">
                                 <div className="space-y-6">
-                                    <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-line">
+                                    <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-line text-justify">
                                         {content?.overview_text1 || "Established with a vision to provide world-class education, our institute has been at the forefront of academic excellence for over a decade. We are committed to nurturing young minds and transforming them into capable professionals ready to face global challenges."}
                                     </p>
-                                    <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-line">
+                                    <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-line text-justify">
                                         {content?.overview_text2 || "Our state-of-the-art infrastructure, experienced faculty, and industry-aligned curriculum ensure that students receive comprehensive education that balances theoretical knowledge with practical skills."}
                                     </p>
                                     <div className="grid grid-cols-2 gap-6 pt-4">
@@ -119,9 +135,9 @@ export default function AboutPage() {
                                             <div className="p-4 bg-[#BFD8FF] rounded-2xl">
                                                 <Eye className="w-8 h-8 text-[#0B0B3B]" />
                                             </div>
-                                            <h3 className="text-3xl font-bold text-white">Our Vision</h3>
+                                            <h3 className="text-3xl font-bold text-white">{content?.vision_title || "Our Vision"}</h3>
                                         </div>
-                                        <p className="text-blue-100 leading-relaxed text-lg whitespace-pre-line">
+                                        <p className="text-blue-100 leading-relaxed text-lg whitespace-pre-line text-justify">
                                             {content?.vision || "To be a globally recognized institution that shapes future leaders through innovative education, research excellence, and character development, while fostering creativity, critical thinking, and social responsibility."}
                                         </p>
                                         <div className="mt-8 flex gap-3">
@@ -140,8 +156,11 @@ export default function AboutPage() {
                                             <div className="p-4 bg-white rounded-2xl">
                                                 <Target className="w-8 h-8 text-[#FF4040]" />
                                             </div>
-                                            <h3 className="text-3xl font-bold text-white">Our Mission</h3>
+                                            <h3 className="text-3xl font-bold text-white">{content?.mission_title || "Our Mission"}</h3>
                                         </div>
+                                        <p className="text-red-50 mb-4 font-medium italic opacity-90">
+                                            {content?.mission_intro || "The mission of the institution is to:"}
+                                        </p>
                                         <ul className="space-y-4 text-red-50">
                                             {displayMission.map((item, idx) => (
                                                 <li key={idx} className="flex items-start gap-3">
@@ -158,72 +177,80 @@ export default function AboutPage() {
                 </section>
             )}
 
-            {isVisible('achievementsAccreditations') && (
-                <section className="py-20 bg-gradient-to-b from-[#FDFDFF] to-white">
-                    <div className="container mx-auto px-4">
-                        <div className="max-w-6xl mx-auto">
-                            <div className="text-center mb-16">
-                                <h2 className="text-3xl md:text-5xl font-extrabold text-[#0B0B3B] mb-4">
-                                    Achievements & Accreditations
-                                </h2>
-                                <div className="w-24 h-1 bg-[#FF4040] mx-auto rounded-full mb-6"></div>
-                                <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                                    Recognized for excellence and committed to maintaining the highest standards of education
-                                </p>
-                            </div>
-
-                            {/* Achievements Grid */}
-                            <div className="grid md:grid-cols-3 gap-8 mb-16">
-                                <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-[#BFD8FF] hover:shadow-2xl transition-shadow group">
-                                    <div className="p-4 bg-gradient-to-br from-[#BFD8FF] to-[#E5E7EB] rounded-2xl w-16 h-16 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                        <Trophy className="w-8 h-8 text-[#0B0B3B]" />
-                                    </div>
-                                    <h4 className="text-xl font-bold text-[#0B0B3B] mb-3">Best Institute Award</h4>
-                                    <p className="text-gray-600 leading-relaxed">
-                                        Recognized as the Best Educational Institute for Academic Excellence in 2023
+            {
+                isVisible('achievementsAccreditations') && (
+                    <section className="py-20 bg-gradient-to-b from-[#FDFDFF] to-white">
+                        <div className="container mx-auto px-4">
+                            <div className="max-w-6xl mx-auto">
+                                <div className="text-center mb-16">
+                                    <h2 className="text-3xl md:text-5xl font-extrabold text-[#0B0B3B] mb-4">
+                                        {content?.achievements_title || "Achievements & Accreditations"}
+                                    </h2>
+                                    <div className="w-24 h-1 bg-[#FF4040] mx-auto rounded-full mb-6"></div>
+                                    <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                                        {content?.achievements_subtitle || "Recognized for excellence and committed to maintaining the highest standards of education"}
                                     </p>
                                 </div>
 
-                                <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-[#FFF5F5] hover:shadow-2xl transition-shadow group">
-                                    <div className="p-4 bg-gradient-to-br from-[#FFF5F5] to-[#FFE5E5] rounded-2xl w-16 h-16 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                        <Shield className="w-8 h-8 text-[#FF4040]" />
-                                    </div>
-                                    <h4 className="text-xl font-bold text-[#0B0B3B] mb-3">NAAC Accredited</h4>
-                                    <p className="text-gray-600 leading-relaxed">
-                                        Accredited by National Assessment and Accreditation Council with A+ Grade
-                                    </p>
-                                </div>
-
-                                <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-[#FFF9E5] hover:shadow-2xl transition-shadow group">
-                                    <div className="p-4 bg-gradient-to-br from-[#FFF9E5] to-[#FFEED5] rounded-2xl w-16 h-16 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                        <Star className="w-8 h-8 text-[#FACC15]" />
-                                    </div>
-                                    <h4 className="text-xl font-bold text-[#0B0B3B] mb-3">100% Placement</h4>
-                                    <p className="text-gray-600 leading-relaxed">
-                                        Achieved 100% placement record for the batch 2022-23 with top companies
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Accreditation Logos */}
-                            <div className="bg-gradient-to-r from-[#BFD8FF] to-[#FFF5F5] rounded-3xl p-12">
-                                <h3 className="text-2xl font-bold text-[#0B0B3B] text-center mb-8">
-                                    Our Accreditations & Affiliations
-                                </h3>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                                    {['NAAC', 'UGC', 'AICTE', 'ISO'].map((accred, idx) => (
-                                        <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-                                            <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
-                                                <span className="text-2xl font-bold text-gray-600">{accred}</span>
-                                            </div>
+                                {/* Achievements Grid */}
+                                <div className="grid md:grid-cols-3 gap-8 mb-16">
+                                    <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-[#BFD8FF] hover:shadow-2xl transition-shadow group">
+                                        <div className="p-4 bg-gradient-to-br from-[#BFD8FF] to-[#E5E7EB] rounded-2xl w-16 h-16 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                            <Trophy className="w-8 h-8 text-[#0B0B3B]" />
                                         </div>
-                                    ))}
+                                        <h4 className="text-xl font-bold text-[#0B0B3B] mb-3">
+                                            {content?.achievement1_title || "Best Institute Award"}
+                                        </h4>
+                                        <p className="text-gray-600 leading-relaxed">
+                                            {content?.achievement1_text || "Recognized as the Best Educational Institute for Academic Excellence in 2023"}
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-[#FFF5F5] hover:shadow-2xl transition-shadow group">
+                                        <div className="p-4 bg-gradient-to-br from-[#FFF5F5] to-[#FFE5E5] rounded-2xl w-16 h-16 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                            <Shield className="w-8 h-8 text-[#FF4040]" />
+                                        </div>
+                                        <h4 className="text-xl font-bold text-[#0B0B3B] mb-3">
+                                            {content?.achievement2_title || "NAAC Accredited"}
+                                        </h4>
+                                        <p className="text-gray-600 leading-relaxed">
+                                            {content?.achievement2_text || "Accredited by National Assessment and Accreditation Council with A+ Grade"}
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-[#FFF9E5] hover:shadow-2xl transition-shadow group">
+                                        <div className="p-4 bg-gradient-to-br from-[#FFF9E5] to-[#FFEED5] rounded-2xl w-16 h-16 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                            <Star className="w-8 h-8 text-[#FACC15]" />
+                                        </div>
+                                        <h4 className="text-xl font-bold text-[#0B0B3B] mb-3">
+                                            {content?.achievement3_title || "100% Placement"}
+                                        </h4>
+                                        <p className="text-gray-600 leading-relaxed">
+                                            {content?.achievement3_text || "Achieved 100% placement record for the batch 2022-23 with top companies"}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Accreditation Logos */}
+                                <div className="bg-gradient-to-r from-[#BFD8FF] to-[#FFF5F5] rounded-3xl p-12">
+                                    <h3 className="text-2xl font-bold text-[#0B0B3B] text-center mb-8">
+                                        Our Accreditations & Affiliations
+                                    </h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                                        {['NAAC', 'UGC', 'AICTE', 'ISO'].map((accred, idx) => (
+                                            <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                                                <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
+                                                    <span className="text-2xl font-bold text-gray-600">{accred}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
-            )}
+                    </section>
+                )
+            }
 
             <Footer />
         </div>

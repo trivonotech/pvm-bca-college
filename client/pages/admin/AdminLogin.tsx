@@ -99,11 +99,14 @@ export default function AdminLogin() {
     // Handle Email Link Sign-in landing
     useEffect(() => {
         const checkEmailLink = async () => {
+            console.log("DEBUG: Checking email link...");
             const { isSignInWithEmailLink, signInWithEmailLink } = await import('firebase/auth');
             const { auth, db } = await import('@/lib/firebase');
-            const { doc, getDoc } = await import('firebase/firestore');
+            const { doc, getDoc, setDoc, serverTimestamp } = await import('firebase/firestore');
 
+            console.log("DEBUG: Is Email Link:", isSignInWithEmailLink(auth, window.location.href));
             if (isSignInWithEmailLink(auth, window.location.href)) {
+                console.log("DEBUG: Link detected as valid Email Link");
                 let email = window.localStorage.getItem('emailForSignIn');
                 if (!email) {
                     email = window.prompt('Please provide your email for confirmation');
@@ -116,8 +119,29 @@ export default function AdminLogin() {
                     const result = await signInWithEmailLink(auth, email, window.location.href);
                     window.localStorage.removeItem('emailForSignIn');
 
-                    // Fetch User Data & Redirect (Logic duplicated for robustness)
+                    // --- CROSS-DEVICE SIGNAL ---
+                    // Signal that verification passed so other devices can log in
                     const user = result.user;
+                    try {
+                        // Extract Session ID from URL
+                        const url = new URL(window.location.href);
+                        const sessionId = url.searchParams.get('sid');
+                        console.log("DEBUG: Extracted Session ID:", sessionId);
+
+                        // Write to PUBLIC NOTICE BOARD (verification_signals)
+                        // Use setDoc to create if not exists
+                        const signalDocRef = doc(db, 'verification_signals', user.uid);
+                        await setDoc(signalDocRef, {
+                            lastVerification: serverTimestamp(),
+                            lastVerifiedSessionId: sessionId || 'unknown'
+                        });
+                        console.log("DEBUG: Signal Posted to verification_signals");
+                    } catch (e) {
+                        console.warn("Could not post verification signal", e);
+                    }
+                    // ---------------------------
+
+                    // Fetch User Data & Redirect (Logic duplicated for robustness)
                     const userDocRef = doc(db, 'users', user.uid);
                     const userDoc = await getDoc(userDocRef);
 
@@ -130,6 +154,10 @@ export default function AdminLogin() {
                             role: userData.role || 'child_admin',
                             permissions: userData.permissions || []
                         }));
+
+                        // Close this tab or redirect? 
+                        // Usually on mobile you want to stay logged in OR just say "Success, check your desktop"
+                        // But current logic redirects to dashboard. That is fine, user can use both.
                         navigate('/admin/dashboard');
                     } else {
                         setError('User profile not found. Contact Super Admin.');
@@ -186,12 +214,24 @@ export default function AdminLogin() {
 
                 if (securityActive) {
                     // --- SECURE MODE (Email Link) ---
+                    const uidToWatch = user.uid;
+                    const sessionId = Date.now().toString() + Math.random().toString(36).substring(2);
+
                     // If successful, immediately sign out to enforce link verification
                     await auth.signOut();
 
+                    // Construct URL with Session ID
+                    const url = new URL(window.location.href);
+                    // Ensure we don't duplicate logic if re-using URL
+                    if (!url.searchParams.has('sid')) {
+                        url.searchParams.append('sid', sessionId);
+                    } else {
+                        url.searchParams.set('sid', sessionId);
+                    }
+
                     // Send Magic Link (Access Check)
                     const actionCodeSettings = {
-                        url: window.location.href, // Redirect back to this page
+                        url: url.toString(), // Redirect back to this page with SID
                         handleCodeInApp: true,
                     };
 
@@ -200,6 +240,39 @@ export default function AdminLogin() {
 
                     setLinkSent(true);
                     setError('');
+
+                    // START: Listen for Cross-Device Approval
+                    const { onSnapshot, doc } = await import('firebase/firestore');
+                    // Listen to PUBLIC NOTICE BOARD (verification_signals)
+                    const unsub = onSnapshot(doc(db, 'verification_signals', uidToWatch), async (snap) => {
+                        if (snap.exists()) {
+                            const data = snap.data();
+                            console.log("DEBUG: Listener triggered. DB Session ID:", data.lastVerifiedSessionId, "My Session ID:", sessionId);
+                            // Check for User-Session Match
+                            if (data.lastVerifiedSessionId === sessionId) {
+                                console.log("DEBUG: Session Matched! Logging in...");
+                                unsub(); // Stop listening
+                                setLoading(true);
+                                try {
+                                    // Auto-complete login on this device
+                                    await signInWithEmailAndPassword(auth, email, password);
+                                    toast({
+                                        title: "Device Verified",
+                                        description: "Logging you in...",
+                                        className: "bg-green-500 text-white border-none",
+                                    });
+                                    navigate('/admin/dashboard');
+                                } catch (e) {
+                                    console.error("Auto-login failed", e);
+                                    setError("Verification received but auto-login failed. Please manually click Login.");
+                                    setLoading(false);
+                                }
+                            }
+                        }
+                    });
+
+                    // Cleanup listener on unmount or if component updates largely (though hard to track here easily without ref, but okay for this scoped closure)
+                    //Ideally store 'unsub' in a ref if we want to cancel it if user closes tab, but tab close handles it.
                     return;
                 }
 
