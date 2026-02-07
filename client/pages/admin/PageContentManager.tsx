@@ -47,6 +47,14 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                     { key: 'about_title', label: 'Section Title', type: 'text', default: 'About Institute' },
                     { key: 'about_desc', label: 'Description', type: 'textarea', default: 'Our Institute Is Dedicated To Delivering Quality Education Through Well-Structured Academic Programs, Experienced Faculty, And A Student-Focused Learning Environment.' }
                 ]
+            },
+            {
+                id: 'about_home',
+                title: 'About Institute Section',
+                fields: [
+                    { key: 'about_title', label: 'Section Title', type: 'text', default: 'About Institute' },
+                    { key: 'about_desc', label: 'Description', type: 'textarea', default: 'Our Institute Is Dedicated To Delivering Quality Education Through Well-Structured Academic Programs, Experienced Faculty, And A Student-Focused Learning Environment. We Aim To Build Strong Academic Foundations While Enhancing Practical Skills That Prepare Students For Real-World Challenges.' }
+                ]
             }
         ]
     },

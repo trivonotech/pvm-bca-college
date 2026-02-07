@@ -7,7 +7,7 @@ export default function SchemaData() {
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, 'settings', 'seo'), (docSnap) => {
-            if (docSnap.exists() && docSnap.data().structuredDataEnabled) {
+            if (docSnap.exists()) {
                 setSeoData(docSnap.data());
             } else {
                 setSeoData(null);
@@ -23,30 +23,33 @@ export default function SchemaData() {
         const existingScript = document.getElementById('json-ld-schema');
         if (existingScript) existingScript.remove();
 
-        const schema = {
-            "@context": "https://schema.org",
-            "@type": "EducationalOrganization",
-            "name": seoData.collegeName,
-            "url": window.location.origin,
-            "logo": `${window.location.origin}/star-icon.png`,
-            "address": {
-                "@type": "PostalAddress",
-                "streetAddress": seoData.address,
-            },
-            "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": seoData.phone,
-                "contactType": "customer service",
-                "email": seoData.email
-            },
-            "sameAs": Object.values(seoData.socialLinks || {}).filter(url => url)
-        };
+        // JSON-LD Schema (Only if enabled)
+        if (seoData.structuredDataEnabled) {
+            const schema = {
+                "@context": "https://schema.org",
+                "@type": "EducationalOrganization",
+                "name": seoData.collegeName,
+                "url": window.location.origin,
+                "logo": `${window.location.origin}/star-icon.png`,
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": seoData.address,
+                },
+                "contactPoint": {
+                    "@type": "ContactPoint",
+                    "telephone": seoData.phone,
+                    "contactType": "customer service",
+                    "email": seoData.email
+                },
+                "sameAs": Object.values(seoData.socialLinks || {}).filter(url => url)
+            };
 
-        const script = document.createElement('script');
-        script.id = 'json-ld-schema';
-        script.type = 'application/ld+json';
-        script.innerHTML = JSON.stringify(schema);
-        document.head.appendChild(script);
+            const script = document.createElement('script');
+            script.id = 'json-ld-schema';
+            script.type = 'application/ld+json';
+            script.innerHTML = JSON.stringify(schema);
+            document.head.appendChild(script);
+        }
 
         // Add Verification Meta if exists
         if (seoData.googleVerification) {
