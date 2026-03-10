@@ -32,6 +32,7 @@ interface Course {
     id: string;
     name: string;
     code: string;
+    order: number;
     duration: string;
     eligibility: string; // Short text
     eligibilityDetails: string[]; // Detailed list
@@ -228,7 +229,7 @@ export default function CoursesManager() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
     const [formData, setFormData] = useState<Partial<Course>>({
-        name: '', code: '', duration: '', eligibility: '', seats: 60, fees: '', description: '', image: '',
+        name: '', code: '', order: 0, duration: '', eligibility: '', seats: 60, fees: '', description: '', image: '',
         objectives: [], careerOpportunities: [], syllabus: [], eligibilityDetails: []
     });
 
@@ -250,12 +251,16 @@ export default function CoursesManager() {
     }, [isModalOpen]);
 
     useEffect(() => {
-        const q = query(collection(db, 'courses'), orderBy('createdAt', 'desc'));
+        const q = query(collection(db, 'courses'));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const coursesData = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             })) as Course[];
+
+            // Client-side sort to include courses without 'order' field
+            coursesData.sort((a, b) => (a.order || 0) - (b.order || 0));
+
             setCourses(coursesData);
             setLoading(false);
         });
@@ -301,7 +306,7 @@ export default function CoursesManager() {
 
     const resetForm = () => {
         setFormData({
-            name: '', code: '', duration: '', eligibility: '', seats: 60, fees: '', description: '', image: '',
+            name: '', code: '', order: 0, duration: '', eligibility: '', seats: 60, fees: '', description: '', image: '',
             objectives: [], careerOpportunities: [], syllabus: [], eligibilityDetails: []
         });
     };
@@ -477,6 +482,10 @@ export default function CoursesManager() {
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
                                                 <input required type="text" value={formData.duration} onChange={e => setFormData({ ...formData, duration: e.target.value })} className="w-full p-2 border rounded-lg" placeholder="e.g. 3 Years" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                                                <input required type="number" value={formData.order || 0} onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) })} className="w-full p-2 border rounded-lg" />
                                             </div>
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Total Seats</label>

@@ -5,6 +5,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 export interface SectionVisibility {
     // Home Page
     homeHero?: boolean;
+    homeVideoSection?: boolean;
     featureCards?: boolean;
     aboutSection?: boolean;
     academicsSnapshot?: boolean;

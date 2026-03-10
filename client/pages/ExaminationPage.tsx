@@ -2,29 +2,53 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Bell, Calendar, FileText, Download } from 'lucide-react';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
+import { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { collection, query, orderBy, onSnapshot, doc, getDoc } from 'firebase/firestore';
 
 export default function ExaminationPage() {
     const { isVisible } = useSectionVisibility();
-    const examNotices = [
-        {
-            title: 'Semester 1 Examination Schedule Released',
-            date: '10th Dec 2024',
-            type: 'Important',
-            desc: 'The examination schedule for Semester 1 has been published. Students are requested to check their timetable.'
-        },
-        {
-            title: 'Hall Ticket Download Available',
-            date: '8th Dec 2024',
-            type: 'Notice',
-            desc: 'Hall tickets for upcoming examinations are now available for download from the student portal.'
-        },
-        {
-            title: 'Exam Pattern Changes for BCA',
-            date: '5th Dec 2024',
-            type: 'Update',
-            desc: 'Important changes in the examination pattern for BCA students. Please refer to the detailed notification.'
-        }
-    ];
+    const [examNotices, setExamNotices] = useState<any[]>([]);
+    const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
+    const [content, setContent] = useState<any>(() => {
+        const cached = localStorage.getItem('cache_examination_content');
+        return cached ? JSON.parse(cached) : null;
+    });
+
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, 'page_content', 'page_examination'), (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                setContent(data);
+                localStorage.setItem('cache_examination_content', JSON.stringify(data));
+            }
+        });
+        return () => unsub();
+    }, []);
+
+    useEffect(() => {
+        const q = query(collection(db, 'exam_notices'), orderBy('createdAt', 'desc'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setExamNotices(data);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    // Fetch Calendar
+    useEffect(() => {
+        const q = query(collection(db, 'academic_calendar'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // Client-side sort
+            data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+            setCalendarEvents(data);
+        });
+        return () => unsubscribe();
+    }, []);
+
+
+
 
     const results = [
         { exam: 'Semester 5 Results', course: 'All Courses', status: 'Declared', date: '1st Dec 2024' },
@@ -37,18 +61,36 @@ export default function ExaminationPage() {
             <Header />
 
             {isVisible('examinationHero') && (
-                <section className="relative w-full bg-gradient-to-br from-[#0B0B3B] to-[#1a1a5e] text-white py-20 overflow-hidden">
-                    <div className="absolute inset-0 opacity-10"
-                        style={{
-                            backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
-                            backgroundSize: '40px 40px'
-                        }}
-                    />
+                <section className="relative w-full text-white py-20 overflow-hidden">
+                    {content?.images?.hero_bg ? (
+                        <>
+                            <div className="absolute inset-0 z-0">
+                                <img
+                                    src={content.images.hero_bg}
+                                    alt="Hero"
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/60"></div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0B3B] to-[#1a1a5e] z-0">
+                            <div className="absolute inset-0 opacity-10"
+                                style={{
+                                    backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
+                                    backgroundSize: '40px 40px'
+                                }}
+                            />
+                        </div>
+                    )}
+
                     <div className="container mx-auto px-4 relative z-10">
                         <div className="max-w-4xl mx-auto text-center">
-                            <h1 className="text-4xl md:text-6xl font-extrabold mb-6">Examination & Results</h1>
+                            <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
+                                {content?.title || "Examination & Results"}
+                            </h1>
                             <p className="text-lg md:text-xl text-blue-200 leading-relaxed">
-                                Stay Updated With Examination Schedules, Notices, And Result Announcements
+                                {content?.subtitle || "Stay Updated With Examination Schedules, Notices, And Result Announcements"}
                             </p>
                         </div>
                     </div>
@@ -116,60 +158,36 @@ export default function ExaminationPage() {
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-8">
-                                <div className="bg-gradient-to-br from-[#BFD8FF] to-[#E5E7EB] rounded-3xl p-8 shadow-xl">
-                                    <h3 className="text-2xl font-bold text-[#0B0B3B] mb-6 flex items-center gap-3">
-                                        <Calendar className="w-7 h-7" />
-                                        First Semester
-                                    </h3>
-                                    <div className="space-y-4">
-                                        <div className="bg-white rounded-xl p-4">
-                                            <div className="font-bold text-[#0B0B3B] mb-1">Classes Begin</div>
-                                            <div className="text-gray-600">1st July - 30th Nov</div>
-                                        </div>
-                                        <div className="bg-white rounded-xl p-4">
-                                            <div className="font-bold text-[#0B0B3B] mb-1">Mid-Term Exams</div>
-                                            <div className="text-gray-600">15th Sept - 25th Sept</div>
-                                        </div>
-                                        <div className="bg-white rounded-xl p-4">
-                                            <div className="font-bold text-[#0B0B3B] mb-1">Final Exams</div>
-                                            <div className="text-gray-600">15th Nov - 30th Nov</div>
-                                        </div>
-                                        <div className="bg-white rounded-xl p-4">
-                                            <div className="font-bold text-[#0B0B3B] mb-1">Winter Break</div>
-                                            <div className="text-gray-600">1st Dec - 15th Dec</div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {Array.from(new Set(calendarEvents.map(e => e.semester)))
+                                    .sort()
+                                    .map((semester: any, idx) => {
+                                        const events = calendarEvents.filter(e => e.semester === semester);
+                                        const bgColor = idx % 2 === 0 ? 'from-[#BFD8FF] to-[#E5E7EB]' : 'from-[#FFF5F5] to-[#FFE5E5]';
 
-                                <div className="bg-gradient-to-br from-[#FFF5F5] to-[#FFE5E5] rounded-3xl p-8 shadow-xl">
-                                    <h3 className="text-2xl font-bold text-[#0B0B3B] mb-6 flex items-center gap-3">
-                                        <Calendar className="w-7 h-7" />
-                                        Second Semester
-                                    </h3>
-                                    <div className="space-y-4">
-                                        <div className="bg-white rounded-xl p-4">
-                                            <div className="font-bold text-[#0B0B3B] mb-1">Classes Begin</div>
-                                            <div className="text-gray-600">16th Dec - 30th April</div>
-                                        </div>
-                                        <div className="bg-white rounded-xl p-4">
-                                            <div className="font-bold text-[#0B0B3B] mb-1">Mid-Term Exams</div>
-                                            <div className="text-gray-600">15th Feb - 25th Feb</div>
-                                        </div>
-                                        <div className="bg-white rounded-xl p-4">
-                                            <div className="font-bold text-[#0B0B3B] mb-1">Final Exams</div>
-                                            <div className="text-gray-600">15th April - 30th April</div>
-                                        </div>
-                                        <div className="bg-white rounded-xl p-4">
-                                            <div className="font-bold text-[#0B0B3B] mb-1">Summer Break</div>
-                                            <div className="text-gray-600">1st May - 30th June</div>
-                                        </div>
-                                    </div>
-                                </div>
+                                        return (
+                                            <div key={semester} className={`bg-gradient-to-br ${bgColor} rounded-3xl p-8 shadow-xl`}>
+                                                <h3 className="text-2xl font-bold text-[#0B0B3B] mb-6 flex items-center gap-3">
+                                                    <Calendar className="w-7 h-7" />
+                                                    {semester}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {events.map((event: any) => (
+                                                        <div key={event.id} className="bg-white rounded-xl p-4">
+                                                            <div className="font-bold text-[#0B0B3B] mb-1">{event.title}</div>
+                                                            <div className="text-gray-600">{event.dateRange}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                             </div>
                         </div>
                     </div>
                 </section>
             )}
+
+
 
             {isVisible('examinationResults') && (
                 <section className="py-20 bg-gradient-to-b from-[#FDFDFF] to-white">

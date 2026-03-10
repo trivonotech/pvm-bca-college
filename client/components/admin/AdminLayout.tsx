@@ -27,6 +27,7 @@ import {
     MessageSquare,
     Search,
     Database,
+    Bell,
 } from 'lucide-react';
 
 
@@ -59,9 +60,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         { icon: Award, label: 'Achievements', path: '/admin/achievements', permission: 'achievements' },
         { icon: Briefcase, label: 'Placements', path: '/admin/placements', permission: 'placements' },
         { icon: BookOpen, label: 'Courses', path: '/admin/courses', permission: 'courses' },
+        { icon: Calendar, label: 'Academic Calendar', path: '/admin/calendar', permission: 'calendar' },
+        { icon: Bell, label: 'Exam Notices', path: '/admin/exam-notices', permission: 'exam_notices' },
         { icon: Eye, label: 'Section Visibility', id: 'visibility', path: '/admin/visibility', permission: 'visibility' },
         { icon: Users, label: 'User Management', path: '/admin/users', permission: 'user_management' },
         { icon: Layout, label: 'Page Content', path: '/admin/pages', permission: 'pages' },
+        { icon: Layout, label: 'Administration Pages', path: '/admin/dynamic-pages', permission: 'dynamic_pages' },
         { icon: Settings, label: 'Settings', id: 'settings', path: '/admin/settings', permission: 'settings' },
         { icon: Search, label: 'SEO Manager', path: '/admin/seo', permission: 'seo' },
         { icon: Database, label: 'Data Backup', path: '/admin/backup', permission: 'backup' },
@@ -319,7 +323,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                             '/admin/achievements': 'achievements',
                             '/admin/placements': 'placements',
                             '/admin/courses': 'courses',
+                            '/admin/calendar': 'calendar',
+                            '/admin/exam-notices': 'exam_notices',
                             '/admin/pages': 'pages',
+                            '/admin/dynamic-pages': 'dynamic_pages',
                             '/admin/visibility': 'visibility',
                             '/admin/users': 'user_management',
                             '/admin/settings': 'settings',

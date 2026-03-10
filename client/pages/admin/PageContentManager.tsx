@@ -1,19 +1,22 @@
 
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Search, Edit, Eye, Save, X, Upload, Layout } from 'lucide-react';
-import { db } from '@/lib/firebase';
+import { Search, Edit, Eye, Save, X, Upload, Layout, RotateCcw } from 'lucide-react';
+import { db, storage } from '@/lib/firebase';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { compressImage } from '@/utils/imageUtils';
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from 'react-router-dom';
+import heroIllustration from '@/assets/hero-illustration.png';
 
 // --- Types ---
 interface PageField {
     key: string;
     label: string;
-    type: 'text' | 'textarea' | 'image';
+    type: 'text' | 'textarea' | 'image' | 'video' | 'select';
     default?: string;
+    options?: { label: string; value: string }[];
 }
 
 interface PageSection {
@@ -36,7 +39,7 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 fields: [
                     { key: 'title', label: 'Main Headline', type: 'text', default: 'Education That Builds Capable Professionals' },
                     { key: 'description', label: 'Description', type: 'textarea', default: 'Undergraduate Programs In Business Administration And Science Designed To Develop Practical Skills, Analytical Thinking, And Career Readiness.' },
-                    { key: 'hero', label: 'Hero Image (Boy)', type: 'image', default: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&h=400&fit=crop' }
+                    { key: 'hero', label: 'Hero Image (Boy)', type: 'image', default: heroIllustration }
                 ]
             },
             {
@@ -44,7 +47,17 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 title: 'About Institute Section',
                 fields: [
                     { key: 'about_title', label: 'Section Title', type: 'text', default: 'About Institute' },
-                    { key: 'about_desc', label: 'Description', type: 'textarea', default: 'Our Institute Is Dedicated To Delivering Quality Education Through Well-Structured Academic Programs, Experienced Faculty, And A Student-Focused Learning Environment. We Aim To Build Strong Academic Foundations While Enhancing Practical Skills That Prepare Students For Real-World Challenges.' }
+                    { key: 'about_desc', label: 'Description', type: 'textarea', default: 'Our Institute Is Dedicated To Delivering Quality Education Through Well-Structured Academic Programs, Experienced Faculty, And A Student-Focused Learning Environment.' }
+                ]
+            },
+            {
+                id: 'video_section',
+                title: 'Home Video Section',
+                fields: [
+                    { key: 'video_section_title', label: 'Section Title', type: 'text', default: 'Campus Tour' },
+                    { key: 'video_source_type', label: 'Video Source Type', type: 'select', default: 'youtube', options: [{ label: 'YouTube URL', value: 'youtube' }, { label: 'Direct Upload', value: 'upload' }] },
+                    { key: 'video_youtube_url', label: 'YouTube URL', type: 'text', default: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+                    { key: 'video_upload', label: 'Upload Video', type: 'video', default: '' }
                 ]
             }
         ]
@@ -56,7 +69,8 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 title: 'Hero Section',
                 fields: [
                     { key: 'title', label: 'Page Title', type: 'text', default: 'About Us' },
-                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Building Tomorrow\'s Leaders Through Quality Education And Holistic Development' }
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Building Tomorrow\'s Leaders Through Quality Education And Holistic Development' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
                 ]
             },
             {
@@ -73,8 +87,25 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 id: 'vision_mission',
                 title: 'Vision & Mission',
                 fields: [
+                    { key: 'vision_title', label: 'Vision Section Title', type: 'text', default: 'Our Vision' },
                     { key: 'vision', label: 'Vision Statement', type: 'textarea', default: 'To be a globally recognized institution that shapes future leaders through innovative education, research excellence, and character development, while fostering creativity, critical thinking, and social responsibility.' },
+                    { key: 'mission_title', label: 'Mission Section Title', type: 'text', default: 'Our Mission' },
+                    { key: 'mission_intro', label: 'Mission Intro Text', type: 'text', default: 'The mission of the institution is to:' },
                     { key: 'mission_list', label: 'Mission Points (One per line)', type: 'textarea', default: "Provide quality education with modern teaching methodologies\nDevelop industry-ready professionals with practical skills\nFoster innovation, research, and creative thinking\nBuild strong industry partnerships for placements" }
+                ]
+            },
+            {
+                id: 'achievements',
+                title: 'Achievements & Accreditations',
+                fields: [
+                    { key: 'achievements_title', label: 'Section Title', type: 'text', default: 'Achievements & Accreditations' },
+                    { key: 'achievements_subtitle', label: 'Section Subtitle', type: 'text', default: 'Recognized for excellence and committed to maintaining the highest standards of education' },
+                    { key: 'achievement1_title', label: 'Achievement 1 Title', type: 'text', default: 'Best Institute Award' },
+                    { key: 'achievement1_text', label: 'Achievement 1 Description', type: 'textarea', default: 'Recognized as the Best Educational Institute for Academic Excellence in 2023' },
+                    { key: 'achievement2_title', label: 'Achievement 2 Title', type: 'text', default: 'NAAC Accredited' },
+                    { key: 'achievement2_text', label: 'Achievement 2 Description', type: 'textarea', default: 'Accredited by National Assessment and Accreditation Council with A+ Grade' },
+                    { key: 'achievement3_title', label: 'Achievement 3 Title', type: 'text', default: '100% Placement' },
+                    { key: 'achievement3_text', label: 'Achievement 3 Description', type: 'textarea', default: 'Achieved 100% placement record for the batch 2022-23 with top companies' }
                 ]
             }
         ]
@@ -86,7 +117,8 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 title: 'Hero Section',
                 fields: [
                     { key: 'title', label: 'Page Title', type: 'text', default: 'Contact Us' },
-                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: "Get In Touch With Us - We're Here To Help With Your Queries And Admissions" }
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: "Get In Touch With Us - We're Here To Help With Your Queries And Admissions" },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
                 ]
             }
         ]
@@ -98,7 +130,8 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 title: 'Hero Section',
                 fields: [
                     { key: 'title', label: 'Page Title', type: 'text', default: 'Admissions' },
-                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Start Your Journey Towards A Bright Future - Admission Process Made Simple' }
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Start Your Journey Towards A Bright Future - Admission Process Made Simple' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
                 ]
             }
         ]
@@ -110,7 +143,73 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 title: 'Hero Section',
                 fields: [
                     { key: 'title', label: 'Page Title', type: 'text', default: 'Academics' },
-                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Comprehensive Programs Designed For Industry Readiness And Career Success' }
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Comprehensive Programs Designed For Industry Readiness And Career Success' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            }
+        ]
+    },
+    'page_examination': {
+        sections: [
+            {
+                id: 'hero',
+                title: 'Hero Section',
+                fields: [
+                    { key: 'title', label: 'Page Title', type: 'text', default: 'Examination & Results' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Stay Updated With Examination Schedules, Notices, And Result Announcements' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            }
+        ]
+    },
+    'page_student_life': {
+        sections: [
+            {
+                id: 'hero',
+                title: 'Hero Section',
+                fields: [
+                    { key: 'title', label: 'Page Title', type: 'text', default: 'Student Life' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Experience A Vibrant Campus Life Filled With Learning, Creativity, And Fun' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            }
+        ]
+    },
+    'page_placements': {
+        sections: [
+            {
+                id: 'hero',
+                title: 'Hero Section',
+                fields: [
+                    { key: 'title', label: 'Page Title', type: 'text', default: 'Training & Placements' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Bridging The Gap Between Academia And Industry With Dedicated Career Support' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            }
+        ]
+    },
+    'page_news': {
+        sections: [
+            {
+                id: 'hero',
+                title: 'Hero Section',
+                fields: [
+                    { key: 'title', label: 'Page Title', type: 'text', default: 'News & Updates' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Stay Connected With The Latest Happenings, Events, And Announcements' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            }
+        ]
+    },
+    'page_student_corner': {
+        sections: [
+            {
+                id: 'hero',
+                title: 'Hero Section',
+                fields: [
+                    { key: 'title', label: 'Page Title', type: 'text', default: 'Student Corner' },
+                    { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Access Important Resources, Forms, And Information For Your Academic Journey' },
+                    { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
                 ]
             }
         ]
@@ -121,7 +220,12 @@ const AVAILABLE_PAGES = [
     { id: 'page_home', name: 'Home Page', description: 'Hero, stats, and promotional sections', path: '/' },
     { id: 'page_about', name: 'About Us', description: 'Overview, Vision, and Mission statements', path: '/about' },
     { id: 'page_academics', name: 'Academics', description: 'Program overviews and descriptions', path: '/academics' },
+    { id: 'page_examination', name: 'Examination', description: 'Exam notices and results', path: '/examination' },
     { id: 'page_admissions', name: 'Admissions', description: 'Process details and hero section', path: '/admissions' },
+    { id: 'page_student_life', name: 'Student Life', description: 'Campus activities and events', path: '/student-life' },
+    { id: 'page_placements', name: 'Placements', description: 'Placement records and recruiters', path: '/placements' },
+    { id: 'page_news', name: 'News & Updates', description: 'College news and announcements', path: '/news' },
+    { id: 'page_student_corner', name: 'Student Corner', description: 'Resources and downloads', path: '/student-corner' },
     { id: 'page_contact', name: 'Contact Page', description: 'Headlines and contact information', path: '/contact' }
 ];
 
@@ -131,6 +235,7 @@ export default function PageContentManager() {
     const [loading, setLoading] = useState(false);
     const [content, setContent] = useState<Record<string, any>>({});
     const [saving, setSaving] = useState(false);
+    const [uploadingVideo, setUploadingVideo] = useState(false);
     const navigate = useNavigate();
 
     // Helper to get default content for a page
@@ -195,6 +300,40 @@ export default function PageContentManager() {
         setSelectedPage(pageId);
         // Optimistically set defaults so UI updates instantly
         setContent(getDefaults(pageId));
+    };
+
+    const handleVideoUpload = async (key: string, file: File) => {
+        try {
+            setUploadingVideo(true);
+            const storageRef = ref(storage, `videos/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`);
+            toast({
+                title: "Uploading...",
+                description: "Video upload started. Please wait.",
+                duration: 5000,
+            });
+            await uploadBytes(storageRef, file);
+            const downloadUrl = await getDownloadURL(storageRef);
+            setContent((prev) => ({
+                ...prev,
+                [key]: downloadUrl
+            }));
+            toast({
+                title: "Success",
+                description: "Video uploaded successfully!",
+                className: "bg-green-500 text-white border-none",
+                duration: 3000,
+            });
+        } catch (error) {
+            console.error("Video upload failed:", error);
+            toast({
+                title: "Error",
+                description: "Failed to upload video.",
+                variant: "destructive",
+                duration: 3000,
+            });
+        } finally {
+            setUploadingVideo(false);
+        }
     };
 
     const handleSave = async () => {
@@ -349,6 +488,74 @@ export default function PageContentManager() {
                                                                     Click to Upload
                                                                 </div>
                                                             </div>
+                                                            {/* Reset Button */}
+                                                            {(content.images?.[field.key] && content.images?.[field.key] !== field.default) && (
+                                                                <button
+                                                                    onClick={() => setContent(prev => ({
+                                                                        ...prev,
+                                                                        images: {
+                                                                            ...prev.images,
+                                                                            [field.key]: field.default || ''
+                                                                        }
+                                                                    }))}
+                                                                    className="mt-2 text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+                                                                >
+                                                                    <RotateCcw className="w-3 h-3" />
+                                                                    Reset to Default
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    {field.type === 'select' && field.options && (
+                                                        <div>
+                                                            <label className="block text-sm font-bold text-gray-700 mb-2">{field.label}</label>
+                                                            <select
+                                                                value={content[field.key] || field.default || ''}
+                                                                onChange={e => setContent({ ...content, [field.key]: e.target.value })}
+                                                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none"
+                                                            >
+                                                                {field.options.map(opt => (
+                                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    )}
+                                                    {field.type === 'video' && (
+                                                        <div>
+                                                            <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase">{field.label}</label>
+                                                            <div className="relative aspect-video bg-gray-200 rounded-lg overflow-hidden group w-full max-w-sm">
+                                                                {content[field.key] ? (
+                                                                    <video src={content[field.key]} className="w-full h-full object-cover" controls />
+                                                                ) : (
+                                                                    <div className="flex items-center justify-center h-full text-gray-400 font-medium">No Video Uploaded</div>
+                                                                )}
+                                                                <input
+                                                                    type="file"
+                                                                    className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
+                                                                    onChange={(e) => e.target.files?.[0] && handleVideoUpload(field.key, e.target.files[0])}
+                                                                    accept="video/mp4,video/x-m4v,video/*"
+                                                                    disabled={uploadingVideo}
+                                                                />
+                                                                {uploadingVideo && (
+                                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-sm pointer-events-none z-20">
+                                                                        Uploading...
+                                                                    </div>
+                                                                )}
+                                                                {!uploadingVideo && (
+                                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold text-sm pointer-events-none">
+                                                                        Click to Upload
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            {(content[field.key] && content[field.key] !== field.default) && (
+                                                                <button
+                                                                    onClick={() => setContent(prev => ({ ...prev, [field.key]: field.default || '' }))}
+                                                                    className="mt-2 text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+                                                                >
+                                                                    <RotateCcw className="w-3 h-3" />
+                                                                    Remove Video
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>
