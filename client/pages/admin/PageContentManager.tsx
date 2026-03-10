@@ -2,8 +2,9 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Search, Edit, Eye, Save, X, Upload, Layout, RotateCcw } from 'lucide-react';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { compressImage } from '@/utils/imageUtils';
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from 'react-router-dom';
@@ -13,8 +14,9 @@ import heroIllustration from '@/assets/hero-illustration.png';
 interface PageField {
     key: string;
     label: string;
-    type: 'text' | 'textarea' | 'image';
+    type: 'text' | 'textarea' | 'image' | 'video' | 'select';
     default?: string;
+    options?: { label: string; value: string }[];
 }
 
 interface PageSection {
@@ -49,11 +51,13 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 ]
             },
             {
-                id: 'about_home',
-                title: 'About Institute Section',
+                id: 'video_section',
+                title: 'Home Video Section',
                 fields: [
-                    { key: 'about_title', label: 'Section Title', type: 'text', default: 'About Institute' },
-                    { key: 'about_desc', label: 'Description', type: 'textarea', default: 'Our Institute Is Dedicated To Delivering Quality Education Through Well-Structured Academic Programs, Experienced Faculty, And A Student-Focused Learning Environment. We Aim To Build Strong Academic Foundations While Enhancing Practical Skills That Prepare Students For Real-World Challenges.' }
+                    { key: 'video_section_title', label: 'Section Title', type: 'text', default: 'Campus Tour' },
+                    { key: 'video_source_type', label: 'Video Source Type', type: 'select', default: 'youtube', options: [{ label: 'YouTube URL', value: 'youtube' }, { label: 'Direct Upload', value: 'upload' }] },
+                    { key: 'video_youtube_url', label: 'YouTube URL', type: 'text', default: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+                    { key: 'video_upload', label: 'Upload Video', type: 'video', default: '' }
                 ]
             }
         ]
@@ -231,6 +235,7 @@ export default function PageContentManager() {
     const [loading, setLoading] = useState(false);
     const [content, setContent] = useState<Record<string, any>>({});
     const [saving, setSaving] = useState(false);
+    const [uploadingVideo, setUploadingVideo] = useState(false);
     const navigate = useNavigate();
 
     // Helper to get default content for a page
@@ -295,6 +300,40 @@ export default function PageContentManager() {
         setSelectedPage(pageId);
         // Optimistically set defaults so UI updates instantly
         setContent(getDefaults(pageId));
+    };
+
+    const handleVideoUpload = async (key: string, file: File) => {
+        try {
+            setUploadingVideo(true);
+            const storageRef = ref(storage, `videos/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`);
+            toast({
+                title: "Uploading...",
+                description: "Video upload started. Please wait.",
+                duration: 5000,
+            });
+            await uploadBytes(storageRef, file);
+            const downloadUrl = await getDownloadURL(storageRef);
+            setContent((prev) => ({
+                ...prev,
+                [key]: downloadUrl
+            }));
+            toast({
+                title: "Success",
+                description: "Video uploaded successfully!",
+                className: "bg-green-500 text-white border-none",
+                duration: 3000,
+            });
+        } catch (error) {
+            console.error("Video upload failed:", error);
+            toast({
+                title: "Error",
+                description: "Failed to upload video.",
+                variant: "destructive",
+                duration: 3000,
+            });
+        } finally {
+            setUploadingVideo(false);
+        }
     };
 
     const handleSave = async () => {
@@ -463,6 +502,58 @@ export default function PageContentManager() {
                                                                 >
                                                                     <RotateCcw className="w-3 h-3" />
                                                                     Reset to Default
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    {field.type === 'select' && field.options && (
+                                                        <div>
+                                                            <label className="block text-sm font-bold text-gray-700 mb-2">{field.label}</label>
+                                                            <select
+                                                                value={content[field.key] || field.default || ''}
+                                                                onChange={e => setContent({ ...content, [field.key]: e.target.value })}
+                                                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none"
+                                                            >
+                                                                {field.options.map(opt => (
+                                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    )}
+                                                    {field.type === 'video' && (
+                                                        <div>
+                                                            <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase">{field.label}</label>
+                                                            <div className="relative aspect-video bg-gray-200 rounded-lg overflow-hidden group w-full max-w-sm">
+                                                                {content[field.key] ? (
+                                                                    <video src={content[field.key]} className="w-full h-full object-cover" controls />
+                                                                ) : (
+                                                                    <div className="flex items-center justify-center h-full text-gray-400 font-medium">No Video Uploaded</div>
+                                                                )}
+                                                                <input
+                                                                    type="file"
+                                                                    className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
+                                                                    onChange={(e) => e.target.files?.[0] && handleVideoUpload(field.key, e.target.files[0])}
+                                                                    accept="video/mp4,video/x-m4v,video/*"
+                                                                    disabled={uploadingVideo}
+                                                                />
+                                                                {uploadingVideo && (
+                                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-sm pointer-events-none z-20">
+                                                                        Uploading...
+                                                                    </div>
+                                                                )}
+                                                                {!uploadingVideo && (
+                                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold text-sm pointer-events-none">
+                                                                        Click to Upload
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            {(content[field.key] && content[field.key] !== field.default) && (
+                                                                <button
+                                                                    onClick={() => setContent(prev => ({ ...prev, [field.key]: field.default || '' }))}
+                                                                    className="mt-2 text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+                                                                >
+                                                                    <RotateCcw className="w-3 h-3" />
+                                                                    Remove Video
                                                                 </button>
                                                             )}
                                                         </div>

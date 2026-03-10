@@ -4,6 +4,7 @@ import StatsSection from '@/components/StatsSection';
 import FeatureCards from '@/components/FeatureCards';
 import AboutSection from '@/components/AboutSection';
 import AcademicsSection from '@/components/AcademicsSection';
+import VideoSection from '@/components/VideoSection';
 import AdmissionJourney from '@/components/AdmissionJourney';
 // import AdmissionSection from '@/components/AdmissionSection'; // Replaced
 import EventHighlights from '@/components/EventHighlights';
@@ -22,6 +23,7 @@ export default function Index() {
       {isVisible('homeStats') && <StatsSection />}
       {isVisible('featureCards') && <FeatureCards />}
       {isVisible('aboutSection') && <AboutSection />}
+      {isVisible('homeVideoSection') && <VideoSection />}
       {isVisible('academicsSnapshot') && <AcademicsSection />}
       {isVisible('admissionJourney') && <AdmissionJourney />}
       {isVisible('eventHighlights') && <EventHighlights />}

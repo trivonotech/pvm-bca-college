@@ -4,7 +4,7 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 // Import the logo
-import logo from '../assets/institute-logo.png';
+import logo from '../assets/institute-logo.jpg';
 import { db } from '@/lib/firebase';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
