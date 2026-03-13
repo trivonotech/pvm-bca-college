@@ -1,4 +1,41 @@
+import { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
+
 export default function HeroSection() {
+  const [content, setContent] = useState({
+    title: 'Education That Builds Capable Professionals',
+    description: 'Undergraduate programs in Business Administration and Science designed to develop practical skills, analytical thinking, and career readiness.',
+    hero: 'https://cdn.builder.io/api/v1/image/assets%2F0868c041cabc4c51bfcb6cb29f5ae749%2F76b70e87d45e4bcdb594f04a97c922a9?format=webp&width=800',
+    hero_cta_text: 'Start Your Journey',
+    hero_cta_link: '/admissions',
+    hero_news_title: 'Latest News',
+    hero_news_desc: "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s",
+    hero_news_link: '/news'
+  });
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, 'page_content', 'page_home'), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setContent(prev => ({
+          ...prev,
+          title: data.title || prev.title,
+          description: data.description || prev.description,
+          hero: data.hero || prev.hero,
+          hero_cta_text: data.hero_cta_text || prev.hero_cta_text,
+          hero_cta_link: data.hero_cta_link || prev.hero_cta_link,
+          hero_news_title: data.hero_news_title || prev.hero_news_title,
+          hero_news_desc: data.hero_news_desc || prev.hero_news_desc,
+          hero_news_link: data.hero_news_link || prev.hero_news_link,
+        }));
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <section className="relative pt-12 pb-16 md:pt-20 md:pb-24 overflow-hidden">
       {/* Background elements */}
@@ -31,18 +68,21 @@ export default function HeroSection() {
               </svg>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight font-grotesk">
-                Education That Builds Capable Professionals
+                {content.title}
               </h1>
             </div>
 
             {/* Description */}
             <p className="text-base md:text-lg text-gray-800 max-w-lg leading-relaxed">
-              Undergraduate programs in Business Administration and Science designed to develop practical skills, analytical thinking, and career readiness.
+              {content.description}
             </p>
 
             {/* CTA Button */}
-            <button className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-gray-900 text-yellow-300 rounded-full font-medium text-sm md:text-base hover:bg-gray-800 transition-colors group">
-              Start Your Journey
+            <Link
+              to={content.hero_cta_link}
+              className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-gray-900 text-yellow-300 rounded-full font-medium text-sm md:text-base hover:bg-gray-800 transition-colors group"
+            >
+              {content.hero_cta_text}
               <svg
                 className="w-4 h-4 group-hover:translate-x-1 transition-transform"
                 viewBox="0 0 8 15"
@@ -53,7 +93,7 @@ export default function HeroSection() {
                   fill="currentColor"
                 />
               </svg>
-            </button>
+            </Link>
 
             {/* Latest News Card */}
             <div className="mt-8 md:mt-12 p-4 md:p-6 border border-pink-200 rounded-2xl bg-white/50 backdrop-blur-sm max-w-sm">
@@ -62,13 +102,13 @@ export default function HeroSection() {
                   <span className="text-lg font-bold text-pink-900">📰</span>
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1">Latest News</h3>
+                  <h3 className="font-semibold text-gray-900 mb-1">{content.hero_news_title}</h3>
                   <p className="text-sm text-gray-700 leading-relaxed">
-                    Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s
+                    {content.hero_news_desc}
                   </p>
-                  <a href="#" className="text-sm font-semibold text-pink-600 mt-3 inline-flex items-center gap-1 hover:gap-2 transition-all">
+                  <Link to={content.hero_news_link} className="text-sm font-semibold text-pink-600 mt-3 inline-flex items-center gap-1 hover:gap-2 transition-all">
                     More Detail →
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -77,7 +117,7 @@ export default function HeroSection() {
           {/* Right Side - Illustration */}
           <div className="relative h-80 md:h-96 lg:h-auto flex items-center justify-center">
             <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F0868c041cabc4c51bfcb6cb29f5ae749%2F76b70e87d45e4bcdb594f04a97c922a9?format=webp&width=800"
+              src={content.hero}
               alt="Student character illustration"
               className="w-full h-full object-contain"
             />

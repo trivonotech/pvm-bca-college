@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Save, Globe, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, Youtube, Shield } from 'lucide-react';
+import { Save, Globe, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, Youtube, Shield, Upload, RotateCcw } from 'lucide-react';
+import { compressImage } from '@/utils/imageUtils';
 import SecurityConfigModal from '@/components/admin/SecurityConfigModal';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -15,6 +16,7 @@ export default function SettingsManager() {
         siteEmail: 'info@pvmbca.edu',
         sitePhone: '+91 1234567890',
         siteAddress: 'College Address, City, State - 123456',
+        siteLogo: '',
         mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8354345093747!2d144.9537353159042!3d-37.81720974201434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4c2b349649%3A0xb6899234e561db11!2sEnvato!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin',
         facebook: 'https://facebook.com/pvmbca',
         twitter: 'https://twitter.com/pvmbca',
@@ -46,6 +48,27 @@ export default function SettingsManager() {
             }
         }
         setFormData(prev => ({ ...prev, mapUrl: extracted }));
+    };
+
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            const base64 = await compressImage(file);
+            setFormData(prev => ({ ...prev, siteLogo: base64 }));
+            toast({
+                title: "Logo Ready",
+                description: "The logo has been processed. Don't forget to save changes.",
+                className: "bg-blue-600 text-white border-none"
+            });
+        } catch (error) {
+            console.error("Logo upload failed:", error);
+            toast({
+                title: "Error",
+                description: "Failed to process logo image.",
+                variant: "destructive"
+            });
+        }
     };
 
     useEffect(() => {
@@ -133,7 +156,44 @@ export default function SettingsManager() {
                             <Globe className="w-6 h-6 text-blue-600" />
                             Basic Information
                         </h2>
-                        <div className="space-y-4">
+                        <div className="space-y-6">
+                            {/* Logo Upload */}
+                            <div className="flex flex-col md:flex-row items-start gap-6 pb-6 border-b border-gray-100">
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-gray-700">Company Logo</label>
+                                    <div className="relative group w-40 h-40 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden hover:border-blue-400 transition-colors">
+                                        {formData.siteLogo ? (
+                                            <img src={formData.siteLogo} alt="Preview" className="w-full h-full object-contain p-2" />
+                                        ) : (
+                                            <div className="text-center p-4">
+                                                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                                <p className="text-xs text-gray-500 font-medium">Click to upload logo</p>
+                                            </div>
+                                        )}
+                                        <input
+                                            type="file"
+                                            onChange={handleLogoUpload}
+                                            accept="image/*"
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                        />
+                                    </div>
+                                    {formData.siteLogo && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, siteLogo: '' }))}
+                                            className="text-xs text-red-500 hover:text-red-700 font-bold flex items-center gap-1 mt-2"
+                                        >
+                                            <RotateCcw className="w-3 h-3" /> Reset to Default
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex-1 space-y-4 pt-6 md:pt-8">
+                                    <p className="text-sm text-gray-500 italic">
+                                        Note: We recommend a transparent PNG/WebP logo. The image will be automatically optimized for site performance.
+                                    </p>
+                                </div>
+                            </div>
+
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Site Name</label>
                                 <input

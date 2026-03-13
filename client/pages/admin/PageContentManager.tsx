@@ -37,7 +37,33 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 fields: [
                     { key: 'title', label: 'Main Headline', type: 'text', default: 'Education That Builds Capable Professionals' },
                     { key: 'description', label: 'Description', type: 'textarea', default: 'Undergraduate Programs In Business Administration And Science Designed To Develop Practical Skills, Analytical Thinking, And Career Readiness.' },
-                    { key: 'hero', label: 'Hero Image (Boy)', type: 'image', default: heroIllustration }
+                    { key: 'hero', label: 'Hero Image (Boy)', type: 'image', default: heroIllustration },
+                    { key: 'hero_cta_text', label: 'CTA Button Text', type: 'text', default: 'Start Your Journey' },
+                    { key: 'hero_cta_link', label: 'CTA Button Link', type: 'text', default: '/admissions' },
+                    { key: 'hero_news_title', label: 'News Card Title', type: 'text', default: 'Latest News' },
+                    { key: 'hero_news_desc', label: 'News Card Description', type: 'textarea', default: "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s" },
+                    { key: 'hero_news_link', label: 'News Detail Link', type: 'text', default: '/news' },
+                ]
+            },
+            {
+                id: 'feature_cards',
+                title: 'Feature Cards Section',
+                fields: [
+                    { key: 'feature1_title', label: 'Card 1 Title', type: 'text', default: 'Courses' },
+                    { key: 'feature1_desc', label: 'Card 1 Description', type: 'textarea', default: 'Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry.' },
+                    { key: 'feature1_link', label: 'Card 1 Link', type: 'text', default: '/academics' },
+
+                    { key: 'feature2_title', label: 'Card 2 Title', type: 'text', default: 'Study Materials' },
+                    { key: 'feature2_desc', label: 'Card 2 Description', type: 'textarea', default: 'Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry.' },
+                    { key: 'feature2_link', label: 'Card 2 Link', type: 'text', default: '/student-corner' },
+
+                    { key: 'feature3_title', label: 'Card 3 Title', type: 'text', default: 'Exam Notices' },
+                    { key: 'feature3_desc', label: 'Card 3 Description', type: 'textarea', default: 'Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry.' },
+                    { key: 'feature3_link', label: 'Card 3 Link', type: 'text', default: '/examinations' },
+
+                    { key: 'feature4_title', label: 'Card 4 Title', type: 'text', default: 'Placements' },
+                    { key: 'feature4_desc', label: 'Card 4 Description', type: 'textarea', default: 'Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry.' },
+                    { key: 'feature4_link', label: 'Card 4 Link', type: 'text', default: '/placements' },
                 ]
             },
             {
