@@ -49,7 +49,11 @@ const PageContentManager = lazy(() => import("./pages/admin/PageContentManager")
 const AdmissionsManager = lazy(() => import("./pages/admin/AdmissionsManager"));
 const CoursesManager = lazy(() => import("./pages/admin/CoursesManager"));
 const WorkshopsManager = lazy(() => import("./pages/admin/WorkshopsManager"));
+const CalendarManager = lazy(() => import("./pages/admin/CalendarManager"));
+const ExamNoticesManager = lazy(() => import("./pages/admin/ExamNoticesManager"));
 const SystemHealth = lazy(() => import("./pages/admin/SystemHealth"));
+const DynamicPageManager = lazy(() => import("./pages/admin/DynamicPageManager"));
+const DynamicPage = lazy(() => import("./pages/DynamicPage"));
 
 const PageEditor = lazy(() => import("./pages/admin/editors/PageEditor"));
 
@@ -76,6 +80,7 @@ function AppContent() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/submit-news" element={<SubmitNewsPage />} />
           <Route path="/courses/:id" element={<CourseDetailPage />} />
+          <Route path="/administration/:slug" element={<DynamicPage />} />
 
           {/* Admin Panel Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -100,7 +105,11 @@ function AppContent() {
           <Route path="/admin/inquiries" element={<ProtectedRoute><InquiriesManager /></ProtectedRoute>} />
           <Route path="/admin/subscribers" element={<ProtectedRoute><SubscribersManager /></ProtectedRoute>} />
           <Route path="/admin/seo" element={<ProtectedRoute><SEOManager /></ProtectedRoute>} />
+          <Route path="/admin/seo" element={<ProtectedRoute><SEOManager /></ProtectedRoute>} />
           <Route path="/admin/backup" element={<ProtectedRoute><BackupManager /></ProtectedRoute>} />
+          <Route path="/admin/calendar" element={<ProtectedRoute><CalendarManager /></ProtectedRoute>} />
+          <Route path="/admin/exam-notices" element={<ProtectedRoute><ExamNoticesManager /></ProtectedRoute>} />
+          <Route path="/admin/dynamic-pages" element={<ProtectedRoute><DynamicPageManager /></ProtectedRoute>} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

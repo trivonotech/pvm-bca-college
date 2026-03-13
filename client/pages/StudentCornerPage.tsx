@@ -1,15 +1,31 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { MessageSquare, BookOpen, Link as LinkIcon, HelpCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, onSnapshot } from 'firebase/firestore';
 import { useToast } from "@/components/ui/use-toast";
 
 export default function StudentCornerPage() {
     const { isVisible } = useSectionVisibility();
     const { toast } = useToast();
+    const [content, setContent] = useState<any>(() => {
+        const cached = localStorage.getItem('cache_student_corner_content');
+        return cached ? JSON.parse(cached) : null;
+    });
+
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, 'page_content', 'page_student_corner'), (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                setContent(data);
+                localStorage.setItem('cache_student_corner_content', JSON.stringify(data));
+            }
+        });
+        return () => unsub();
+    }, []);
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -89,18 +105,36 @@ export default function StudentCornerPage() {
             <Header />
 
             {isVisible('studentCornerHero') && (
-                <section className="relative w-full bg-gradient-to-br from-[#0B0B3B] to-[#1a1a5e] text-white py-20 overflow-hidden">
-                    <div className="absolute inset-0 opacity-10"
-                        style={{
-                            backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
-                            backgroundSize: '40px 40px'
-                        }}
-                    />
+                <section className="relative w-full text-white py-20 overflow-hidden">
+                    {content?.images?.hero_bg ? (
+                        <>
+                            <div className="absolute inset-0 z-0">
+                                <img
+                                    src={content.images.hero_bg}
+                                    alt="Hero"
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/60"></div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0B3B] to-[#1a1a5e] z-0">
+                            <div className="absolute inset-0 opacity-10"
+                                style={{
+                                    backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
+                                    backgroundSize: '40px 40px'
+                                }}
+                            />
+                        </div>
+                    )}
+
                     <div className="container mx-auto px-4 relative z-10">
                         <div className="max-w-4xl mx-auto text-center">
-                            <h1 className="text-4xl md:text-6xl font-extrabold mb-6">Student Corner</h1>
+                            <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
+                                {content?.title || "Student Corner"}
+                            </h1>
                             <p className="text-lg md:text-xl text-blue-200 leading-relaxed">
-                                Your Voice Matters - Share Feedback, Get Support, And Access Important Resources
+                                {content?.subtitle || "Your Voice Matters - Share Feedback, Get Support, And Access Important Resources"}
                             </p>
                         </div>
                     </div>

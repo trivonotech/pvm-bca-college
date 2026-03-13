@@ -155,7 +155,30 @@ export default function SEOManager() {
                                 <input
                                     type="text"
                                     value={seoData.googleVerification}
-                                    onChange={(e) => setSeoData({ ...seoData, googleVerification: e.target.value })}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        // Auto-extract content if user pastes the full meta tag
+                                        if (val.includes('<meta') && val.includes('google-site-verification')) {
+                                            const match = val.match(/content=["']([^"']+)["']/);
+                                            if (match && match[1]) {
+                                                setSeoData({ ...seoData, googleVerification: match[1] });
+                                                toast({
+                                                    title: "Code Extracted!",
+                                                    description: "We automatically extracted the verification code for you.",
+                                                    className: "bg-green-600 text-white border-none",
+                                                });
+                                            } else {
+                                                setSeoData({ ...seoData, googleVerification: val }); // Fallback
+                                                toast({
+                                                    title: "Invalid Format",
+                                                    description: "Could not extract code. Please paste ONLY the code.",
+                                                    variant: "destructive",
+                                                });
+                                            }
+                                        } else {
+                                            setSeoData({ ...seoData, googleVerification: val });
+                                        }
+                                    }}
                                     placeholder="google-site-verification code"
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-100 outline-none"
                                 />

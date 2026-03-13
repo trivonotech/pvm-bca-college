@@ -18,7 +18,9 @@ interface AdmissionStep {
     step: string;
     title: string;
     desc: string;
-    color: string;
+    icon?: string;
+    buttonLabel?: string;
+    buttonLink?: string;
 }
 
 interface Scholarship {
@@ -115,7 +117,14 @@ export default function AdmissionsManager() {
 
     // --- Steps Handlers ---
     const addStep = () => {
-        setSteps([...steps, { step: `0${steps.length + 1}`, title: '', desc: '', color: 'bg-[#BFD8FF]' }]);
+        setSteps([...steps, {
+            step: `0${steps.length + 1}`,
+            title: '',
+            desc: '',
+            icon: 'ClipboardCheck',
+            buttonLabel: '',
+            buttonLink: ''
+        }]);
     };
     const updateStep = (index: number, field: string, value: string) => {
         const newSteps = [...steps];
@@ -194,18 +203,44 @@ export default function AdmissionsManager() {
                     </div>
                     <div className="space-y-4">
                         {steps.map((step, idx) => (
-                            <div key={idx} className="flex gap-4 items-start border p-4 rounded-xl bg-gray-50">
+                            <div key={idx} className="border p-4 rounded-xl bg-gray-50 flex gap-4">
                                 <div className="w-16">
                                     <label className="text-xs font-bold text-gray-500">Step #</label>
                                     <input type="text" value={step.step} onChange={(e) => updateStep(idx, 'step', e.target.value)} className="w-full p-2 border rounded" />
                                 </div>
-                                <div className="flex-1">
-                                    <label className="text-xs font-bold text-gray-500">Title</label>
-                                    <input type="text" value={step.title} onChange={(e) => updateStep(idx, 'title', e.target.value)} className="w-full p-2 border rounded mb-2" placeholder="Step Title" />
-                                    <label className="text-xs font-bold text-gray-500">Description</label>
-                                    <textarea value={step.desc} onChange={(e) => updateStep(idx, 'desc', e.target.value)} className="w-full p-2 border rounded" placeholder="Description" rows={2} />
+                                <div className="flex-1 grid grid-cols-2 gap-4">
+                                    <div className="col-span-2">
+                                        <label className="text-xs font-bold text-gray-500">Title</label>
+                                        <input type="text" value={step.title} onChange={(e) => updateStep(idx, 'title', e.target.value)} className="w-full p-2 border rounded" placeholder="Step Title" />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="text-xs font-bold text-gray-500">Description</label>
+                                        <textarea value={step.desc} onChange={(e) => updateStep(idx, 'desc', e.target.value)} className="w-full p-2 border rounded" placeholder="Description" rows={2} />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500">Icon Name (Lucide React)</label>
+                                        <select value={step.icon} onChange={(e) => updateStep(idx, 'icon', e.target.value)} className="w-full p-2 border rounded">
+                                            <option value="ClipboardCheck">ClipboardCheck</option>
+                                            <option value="FileCheck">FileCheck</option>
+                                            <option value="Globe">Globe (Register)</option>
+                                            <option value="FileText">FileText (Doc)</option>
+                                            <option value="Users">Users (Alumni)</option>
+                                            <option value="GraduationCap">GraduationCap</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        {/* Spacer */}
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500">Button Label (Optional)</label>
+                                        <input type="text" value={step.buttonLabel || ''} onChange={(e) => updateStep(idx, 'buttonLabel', e.target.value)} className="w-full p-2 border rounded" placeholder="e.g. Register Online" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500">Button Link (Optional)</label>
+                                        <input type="text" value={step.buttonLink || ''} onChange={(e) => updateStep(idx, 'buttonLink', e.target.value)} className="w-full p-2 border rounded" placeholder="https://..." />
+                                    </div>
                                 </div>
-                                <button onClick={() => removeStep(idx)} className="text-red-500 p-2 hover:bg-red-50 rounded bg-white border border-red-200 mt-6">
+                                <button onClick={() => removeStep(idx)} className="text-red-500 p-2 hover:bg-red-50 rounded bg-white border border-red-200 h-10 self-start mt-6">
                                     <Trash2 className="w-5 h-5" />
                                 </button>
                             </div>

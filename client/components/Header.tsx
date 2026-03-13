@@ -5,11 +5,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 // Import the logo
 import logo from '../assets/institute-logo.png';
+import { db } from '@/lib/firebase';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 export default function Header() {
   const { isVisible } = useSectionVisibility();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expandedMobile, setExpandedMobile] = useState<string | null>(null);
+  const [dynamicPages, setDynamicPages] = useState<any[]>([]);
   const location = useLocation();
 
   // Prevent scrolling when mobile menu is open
@@ -24,9 +27,24 @@ export default function Header() {
     };
   }, [mobileOpen]);
 
+  // Fetch Dynamic Pages for Administration Menu
+  useEffect(() => {
+    const q = query(collection(db, 'dynamic_pages'), orderBy('order'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        label: doc.data().title,
+        href: `/administration/${doc.data().slug}`,
+        visible: true // Or handle visibility logic if needed
+      }));
+      setDynamicPages(data);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const navItems = [
     { label: 'Home', href: '/', visible: true },
     { label: 'About', href: '/about', visible: isVisible('aboutHero') },
+
     {
       label: 'Academics',
       submenu: [
@@ -49,6 +67,11 @@ export default function Header() {
         { label: 'Student Corner', href: '/student-corner', visible: true },
         { label: 'Contact Us', href: '/contact', visible: isVisible('contactHero') },
       ].filter(item => item.visible !== false)
+    },
+    {
+      label: 'Administration',
+      submenu: dynamicPages,
+      visible: dynamicPages.length > 0
     },
   ].filter(item => {
     // Hide top-level items if they have a visible property set to false

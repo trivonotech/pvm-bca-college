@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Newspaper, Calendar, Megaphone, PlusCircle } from 'lucide-react';
 import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, doc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 import { useToast } from "@/components/ui/use-toast";
@@ -29,6 +29,22 @@ interface NewsArticle {
 export default function NewsPage() {
     const { isVisible } = useSectionVisibility();
     const { toast } = useToast();
+    const [content, setContent] = useState<any>(() => {
+        const cached = localStorage.getItem('cache_news_page_content');
+        return cached ? JSON.parse(cached) : null;
+    });
+
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, 'page_content', 'page_news'), (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                setContent(data);
+                localStorage.setItem('cache_news_page_content', JSON.stringify(data));
+            }
+        });
+        return () => unsub();
+    }, []);
+
     const [approvedNews, setApprovedNews] = useState<NewsArticle[]>(() => {
         const cached = localStorage.getItem('cache_news_approved');
         return cached ? JSON.parse(cached) : [];
@@ -165,18 +181,36 @@ export default function NewsPage() {
 
             {/* Hero Section */}
             {isVisible('newsHero') && (
-                <section className="relative w-full bg-gradient-to-br from-[#0B0B3B] to-[#1a1a5e] text-white py-20 overflow-hidden">
-                    <div className="absolute inset-0 opacity-10"
-                        style={{
-                            backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
-                            backgroundSize: '40px 40px'
-                        }}
-                    />
+                <section className="relative w-full text-white py-20 overflow-hidden">
+                    {content?.images?.hero_bg ? (
+                        <>
+                            <div className="absolute inset-0 z-0">
+                                <img
+                                    src={content.images.hero_bg}
+                                    alt="Hero"
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/60"></div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0B3B] to-[#1a1a5e] z-0">
+                            <div className="absolute inset-0 opacity-10"
+                                style={{
+                                    backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
+                                    backgroundSize: '40px 40px'
+                                }}
+                            />
+                        </div>
+                    )}
+
                     <div className="container mx-auto px-4 relative z-10">
                         <div className="max-w-4xl mx-auto text-center">
-                            <h1 className="text-4xl md:text-6xl font-extrabold mb-6">News & Updates</h1>
+                            <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
+                                {content?.title || "News & Updates"}
+                            </h1>
                             <p className="text-lg md:text-xl text-blue-200 leading-relaxed mb-8">
-                                Stay Informed With Latest Academic News, Announcements, And Campus Events
+                                {content?.subtitle || "Stay Informed With Latest Academic News, Announcements, And Campus Events"}
                             </p>
                             <Link
                                 to="/submit-news"

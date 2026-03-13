@@ -26,6 +26,22 @@ interface PlacementStats {
 
 export default function PlacementsPage() {
     const { isVisible } = useSectionVisibility();
+    const [content, setContent] = useState<any>(() => {
+        const cached = localStorage.getItem('cache_placements_content');
+        return cached ? JSON.parse(cached) : null;
+    });
+
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, 'page_content', 'page_placements'), (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                setContent(data);
+                localStorage.setItem('cache_placements_content', JSON.stringify(data));
+            }
+        });
+        return () => unsub();
+    }, []);
+
     const [placements, setPlacements] = useState<Placement[]>(() => {
         const cached = localStorage.getItem('cache_placement_data');
         return cached ? JSON.parse(cached) : [];
@@ -118,18 +134,36 @@ export default function PlacementsPage() {
             <Header />
 
             {isVisible('placementHero') && (
-                <section className="relative w-full bg-gradient-to-br from-[#0B0B3B] to-[#1a1a5e] text-white py-20 overflow-hidden">
-                    <div className="absolute inset-0 opacity-10"
-                        style={{
-                            backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
-                            backgroundSize: '40px 40px'
-                        }}
-                    />
+                <section className="relative w-full text-white py-20 overflow-hidden">
+                    {content?.images?.hero_bg ? (
+                        <>
+                            <div className="absolute inset-0 z-0">
+                                <img
+                                    src={content.images.hero_bg}
+                                    alt="Hero"
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/60"></div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0B3B] to-[#1a1a5e] z-0">
+                            <div className="absolute inset-0 opacity-10"
+                                style={{
+                                    backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
+                                    backgroundSize: '40px 40px'
+                                }}
+                            />
+                        </div>
+                    )}
+
                     <div className="container mx-auto px-4 relative z-10">
                         <div className="max-w-4xl mx-auto text-center">
-                            <h1 className="text-4xl md:text-6xl font-extrabold mb-6">Placements & Achievements</h1>
+                            <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
+                                {content?.title || "Placements & Achievements"}
+                            </h1>
                             <p className="text-lg md:text-xl text-blue-200 leading-relaxed">
-                                Empowering Students To Achieve Their Career Goals With Top Industry Placements
+                                {content?.subtitle || "Empowering Students To Achieve Their Career Goals With Top Industry Placements"}
                             </p>
                         </div>
                     </div>
