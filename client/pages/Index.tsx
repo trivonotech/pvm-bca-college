@@ -6,6 +6,7 @@ import AboutSection from '@/components/AboutSection';
 import AcademicsSection from '@/components/AcademicsSection';
 import AdmissionJourney from '@/components/AdmissionJourney';
 // import AdmissionSection from '@/components/AdmissionSection'; // Replaced
+import VideoSection from '@/components/VideoSection';
 import EventHighlights from '@/components/EventHighlights';
 import TopStudents from '@/components/TopStudents';
 import Footer from '@/components/Footer';
@@ -24,6 +25,7 @@ export default function Index() {
       {isVisible('aboutSection') && <AboutSection />}
       {isVisible('academicsSnapshot') && <AcademicsSection />}
       {isVisible('admissionJourney') && <AdmissionJourney />}
+      {isVisible('homeVideo') && <VideoSection />}
       {isVisible('eventHighlights') && <EventHighlights />}
       {isVisible('topStudents') && <TopStudents />}
       <Footer />

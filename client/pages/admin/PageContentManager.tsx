@@ -55,6 +55,22 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                     { key: 'about_title', label: 'Section Title', type: 'text', default: 'About Institute' },
                     { key: 'about_desc', label: 'Description', type: 'textarea', default: 'Our Institute Is Dedicated To Delivering Quality Education Through Well-Structured Academic Programs, Experienced Faculty, And A Student-Focused Learning Environment. We Aim To Build Strong Academic Foundations While Enhancing Practical Skills That Prepare Students For Real-World Challenges.' }
                 ]
+            },
+            {
+                id: 'video_showcase',
+                title: 'Showcase Video Section',
+                fields: [
+                    { key: 'video_url', label: 'Video URL (YouTube or Direct Link)', type: 'text', default: '' },
+                    { key: 'video_badge', label: 'Video Badge', type: 'text', default: 'Virtual Tour' },
+                    { key: 'video_title', label: 'Video Title', type: 'text', default: 'Experience Our Campus' },
+                    { key: 'video_desc', label: 'Video Description', type: 'textarea', default: 'Watch our video to learn more about our college facilities and student life.' },
+                    { key: 'video_cta_text', label: 'CTA Button Text', type: 'text', default: 'Learn More' },
+                    { key: 'video_cta_link', label: 'CTA Button Link', type: 'text', default: '/about' },
+                    { key: 'video_show_text', label: 'Show Text Overlay (Yes/No)', type: 'text', default: 'Yes' },
+                    { key: 'video_autoplay', label: 'Autoplay (Yes/No)', type: 'text', default: 'No' },
+                    { key: 'video_loop', label: 'Loop (Yes/No)', type: 'text', default: 'Yes' },
+                    { key: 'video_controls', label: 'Show Controls (Yes/No)', type: 'text', default: 'Yes' },
+                ]
             }
         ]
     },
