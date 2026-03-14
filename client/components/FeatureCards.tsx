@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 import cardCourses from '../assets/card-courses.png';
 import cardStudy from '../assets/card-study.png';
 import cardExam from '../assets/card-exam.png';
 import cardPlacements from '../assets/card-placements.png';
 
-const features = [
+const featuresData = [
   {
+    key: 'feature1',
     title: 'Courses',
     description: 'Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry.',
+    link: '/academics',
     buttonText: 'Explore More >>',
     buttonClass: 'bg-gradient-to-r from-[#FF7582] to-[#FC4F5F] shadow-pink-200',
     borderColor: 'border-[#FF7582]',
@@ -15,8 +20,10 @@ const features = [
     image: cardCourses,
   },
   {
+    key: 'feature2',
     title: 'Study Materials',
     description: 'Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry.',
+    link: '/student-corner',
     buttonText: 'Explore More >>',
     buttonClass: 'bg-gradient-to-r from-[#FFB073] to-[#FF8C42] shadow-orange-200',
     borderColor: 'border-[#FFB073]',
@@ -24,8 +31,10 @@ const features = [
     image: cardStudy,
   },
   {
+    key: 'feature3',
     title: 'Exam Notices',
     description: 'Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry.',
+    link: '/examinations',
     buttonText: 'Explore More >>',
     buttonClass: 'bg-gradient-to-r from-[#A78BFA] to-[#7C3AED] shadow-purple-200',
     borderColor: 'border-[#A78BFA]',
@@ -33,8 +42,10 @@ const features = [
     image: cardExam,
   },
   {
+    key: 'feature4',
     title: 'Placements',
     description: 'Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry.',
+    link: '/placements',
     buttonText: 'Explore More >>',
     buttonClass: 'bg-gradient-to-r from-[#34D399] to-[#059669] shadow-green-200',
     borderColor: 'border-[#34D399]',
@@ -44,21 +55,33 @@ const features = [
 ];
 
 export default function FeatureCards() {
-  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [features, setFeatures] = useState(featuresData);
   const carouselRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, 'page_content', 'page_home'), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setFeatures(featuresData.map(f => ({
+          ...f,
+          title: data[`${f.key}_title`] || f.title,
+          description: data[`${f.key}_desc`] || f.description,
+          link: data[`${f.key}_link`] || f.link
+        })));
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleScroll = () => {
     if (carouselRef.current) {
       const scrollLeft = carouselRef.current.scrollLeft;
-      // Calculate card width including gap for accurate index tracking
-      // This assumes a consistent card width and gap.
-      // For more robust solution, measure individual card elements.
       const firstCard = carouselRef.current.children[0] as HTMLElement;
       const cardWidth = firstCard.offsetWidth;
-      const gap = 16; // gap-4 in tailwind is 16px
+      const gap = 16;
       const totalCardSpace = cardWidth + gap;
-
-      // Adjust index calculation to account for scroll position relative to card start
       const index = Math.round(scrollLeft / totalCardSpace);
       setActiveIndex(index);
     }
@@ -68,7 +91,7 @@ export default function FeatureCards() {
     if (carouselRef.current) {
       const firstCard = carouselRef.current.children[0] as HTMLElement;
       const cardWidth = firstCard.offsetWidth;
-      const gap = 16; // gap-4 in tailwind is 16px
+      const gap = 16;
       const totalCardSpace = cardWidth + gap;
 
       carouselRef.current.scrollTo({
@@ -81,7 +104,6 @@ export default function FeatureCards() {
   return (
     <section className="py-8 lg:py-20 px-0 font-sans bg-[#FDFDFF]">
       <div className="container mx-auto px-0 md:px-4">
-        {/* Mobile: Horizontal Scroll Carousel | Desktop: Grid */}
         <div
           ref={carouselRef}
           onScroll={handleScroll}
@@ -93,7 +115,6 @@ export default function FeatureCards() {
               className={`${feature.bgColor} ${feature.borderColor} border rounded-3xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col items-center text-center relative overflow-hidden group h-full w-[calc(100vw-2rem)] md:w-full max-w-sm shrink-0 snap-center mx-auto`}
             >
               <div className="w-full flex justify-center mb-6 mt-4">
-                {/* Illustration */}
                 <img
                   src={feature.image}
                   alt={feature.title}
@@ -110,11 +131,12 @@ export default function FeatureCards() {
               </p>
 
               <div className="mt-auto w-full pb-4">
-                <button
-                  className={`${feature.buttonClass} border-[#FFD700] border text-white font-bold py-3 px-6 rounded-full text-xs shadow-lg transition-transform hover:scale-105 w-full max-w-[160px]`}
+                <Link
+                  to={feature.link}
+                  className={`${feature.buttonClass} border-[#FFD700] border text-white font-bold py-3 px-6 rounded-full text-xs shadow-lg transition-transform hover:scale-105 w-full max-w-[160px] inline-block`}
                 >
                   {feature.buttonText}
-                </button>
+                </Link>
               </div>
             </div>
           ))}

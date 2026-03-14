@@ -24,6 +24,7 @@ export default function SectionVisibilityManager() {
         eventHighlights: true,
         topStudents: true,
         homeStats: true,
+        homeVideo: true,
         // About Page
         aboutHero: true,
         instituteOverview: true,
@@ -110,6 +111,7 @@ export default function SectionVisibilityManager() {
         { key: 'eventHighlights', label: 'Event Highlights Carousel', page: 'Home', description: 'Auto-scrolling event carousel' },
         { key: 'topStudents', label: 'Top Students Section', page: 'Home', description: 'Top performing students showcase' },
         { key: 'homeStats', label: 'Stats Section', page: 'Home', description: 'Counter section for students, events, etc.' },
+        { key: 'homeVideo', label: 'Video Showcase', page: 'Home', description: 'Full-width dynamic video section' },
 
         // About Page Sections  
         { key: 'aboutHero', label: 'Hero Section', page: 'About', description: 'About page hero banner' },

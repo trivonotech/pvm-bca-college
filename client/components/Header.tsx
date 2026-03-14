@@ -6,13 +6,14 @@ import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 // Import the logo
 import logo from '../assets/institute-logo.png';
 import { db } from '@/lib/firebase';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc } from 'firebase/firestore';
 
 export default function Header() {
   const { isVisible } = useSectionVisibility();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expandedMobile, setExpandedMobile] = useState<string | null>(null);
   const [dynamicPages, setDynamicPages] = useState<any[]>([]);
+  const [dynamicLogo, setDynamicLogo] = useState<string | null>(null);
   const location = useLocation();
 
   // Prevent scrolling when mobile menu is open
@@ -37,6 +38,16 @@ export default function Header() {
         visible: true // Or handle visibility logic if needed
       }));
       setDynamicPages(data);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Fetch Site Logo
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
+      if (docSnap.exists()) {
+        setDynamicLogo(docSnap.data().siteLogo || null);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -98,7 +109,7 @@ export default function Header() {
           {/* Logo - Left */}
           <div className="flex-shrink-0 z-10">
             <Link to="/">
-              <img src={logo} alt="Institute Logo" className="h-16 w-auto object-contain" />
+              <img src={dynamicLogo || logo} alt="Institute Logo" className="h-16 w-auto object-contain" />
             </Link>
           </div>
 
