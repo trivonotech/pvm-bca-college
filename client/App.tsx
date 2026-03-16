@@ -44,6 +44,9 @@ import { lazy, Suspense } from "react";
 import { GlobalErrorBoundary } from "@/components/GlobalErrorBoundary";
 import { SecurityMonitor } from "@/components/SecurityMonitor";
 import SchemaData from "@/components/SchemaData";
+import { useEffect, useState } from "react";
+import { db } from "@/lib/firebase";
+import { doc, onSnapshot } from "firebase/firestore";
 
 const PageContentManager = lazy(() => import("./pages/admin/PageContentManager"));
 const AdmissionsManager = lazy(() => import("./pages/admin/AdmissionsManager"));
@@ -62,6 +65,46 @@ const queryClient = new QueryClient();
 function AppContent() {
   const { pathname } = useLocation();
   usePageTracker();
+  const [siteSettings, setSiteSettings] = useState<any>(null);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
+      if (docSnap.exists()) {
+        setSiteSettings(docSnap.data());
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!siteSettings) return;
+
+    const siteName = siteSettings.siteName || 'PVM BCA College';
+    const siteLogo = siteSettings.siteLogo;
+
+    // Generate readable page title from pathname
+    let pageTitle = "Home";
+    if (pathname !== "/") {
+      const parts = pathname.split('/').filter(Boolean);
+      const lastPart = parts[parts.length - 1];
+      pageTitle = lastPart
+        .split(/[-_]/)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
+      // Special cases
+      if (pathname.includes('/admin')) pageTitle = `Admin - ${pageTitle}`;
+    }
+
+    document.title = `${pageTitle} | ${siteName}`;
+
+    // Update Favicon if logo exists, otherwise use default
+    const favicon = document.getElementById('favicon-link') as HTMLLinkElement;
+    if (favicon) {
+      favicon.href = siteLogo || '/favicon.png';
+    }
+  }, [pathname, siteSettings]);
+
   return (
     <>
       <ScrollToTop />
