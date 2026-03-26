@@ -13,8 +13,8 @@ import heroIllustration from '@/assets/hero-illustration.png';
 interface PageField {
     key: string;
     label: string;
-    type: 'text' | 'textarea' | 'image';
-    default?: string;
+    type: 'text' | 'textarea' | 'image' | 'faq_list' | 'contact_info_list';
+    default?: any;
 }
 
 interface PageSection {
@@ -40,9 +40,6 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                     { key: 'hero', label: 'Hero Image (Boy)', type: 'image', default: heroIllustration },
                     { key: 'hero_cta_text', label: 'CTA Button Text', type: 'text', default: 'Start Your Journey' },
                     { key: 'hero_cta_link', label: 'CTA Button Link', type: 'text', default: '/admissions' },
-                    { key: 'hero_news_title', label: 'News Card Title', type: 'text', default: 'Latest News' },
-                    { key: 'hero_news_desc', label: 'News Card Description', type: 'textarea', default: "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s" },
-                    { key: 'hero_news_link', label: 'News Detail Link', type: 'text', default: '/news' },
                 ]
             },
             {
@@ -78,8 +75,16 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                 id: 'about_home',
                 title: 'About Institute Section',
                 fields: [
-                    { key: 'about_title', label: 'Section Title', type: 'text', default: 'About Institute' },
-                    { key: 'about_desc', label: 'Description', type: 'textarea', default: 'Our Institute Is Dedicated To Delivering Quality Education Through Well-Structured Academic Programs, Experienced Faculty, And A Student-Focused Learning Environment. We Aim To Build Strong Academic Foundations While Enhancing Practical Skills That Prepare Students For Real-World Challenges.' }
+                    { key: 'about_title', label: 'About Title', type: 'text', default: 'About Institute' },
+                    { key: 'about_desc', label: 'About Description', type: 'textarea', default: "Our Institute Is Dedicated To Delivering Quality Education Through Well-Structured Academic Programs, Experienced Faculty, And A Student-Focused Learning Environment. We Aim To Build Strong Academic Foundations While Enhancing Practical Skills That Prepare Students For Real-World Challenges." },
+                    { key: 'about_button_link', label: 'About Button Link', type: 'text', default: '/about' }
+                ]
+            },
+            {
+                id: 'highlights',
+                title: 'Event Highlights',
+                fields: [
+                    { key: 'highlights_button_link', label: 'View More Link', type: 'text', default: '/student-life' }
                 ]
             },
             {
@@ -96,6 +101,20 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                     { key: 'video_autoplay', label: 'Autoplay (Yes/No)', type: 'text', default: 'No' },
                     { key: 'video_loop', label: 'Loop (Yes/No)', type: 'text', default: 'Yes' },
                     { key: 'video_controls', label: 'Show Controls (Yes/No)', type: 'text', default: 'Yes' },
+                ]
+            },
+            {
+                id: 'stats',
+                title: 'Stats Counter Section',
+                fields: [
+                    { key: 'stat1_number', label: 'Stat 1 Number', type: 'text', default: '10000+' },
+                    { key: 'stat1_label', label: 'Stat 1 Label', type: 'text', default: 'Students shown faith in us' },
+                    { key: 'stat2_number', label: 'Stat 2 Number', type: 'text', default: '50' },
+                    { key: 'stat2_label', label: 'Stat 2 Label', type: 'text', default: 'Events' },
+                    { key: 'stat3_number', label: 'Stat 3 Number', type: 'text', default: '15+' },
+                    { key: 'stat3_label', label: 'Stat 3 Label', type: 'text', default: 'Experience' },
+                    { key: 'stat4_number', label: 'Stat 4 Number', type: 'text', default: '10+' },
+                    { key: 'stat4_label', label: 'Stat 4 Label', type: 'text', default: 'Courses Offered' },
                 ]
             }
         ]
@@ -145,6 +164,16 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                     { key: 'achievement3_title', label: 'Achievement 3 Title', type: 'text', default: '100% Placement' },
                     { key: 'achievement3_text', label: 'Achievement 3 Description', type: 'textarea', default: 'Achieved 100% placement record for the batch 2022-23 with top companies' }
                 ]
+            },
+            {
+                id: 'about_stats',
+                title: 'Achievement Stats Section',
+                fields: [
+                    { key: 'about_stat1_number', label: 'Stat 1 Number', type: 'text', default: '10+' },
+                    { key: 'about_stat1_label', label: 'Stat 1 Label', type: 'text', default: 'Years of Excellence' },
+                    { key: 'about_stat2_number', label: 'Stat 2 Number', type: 'text', default: '5000+' },
+                    { key: 'about_stat2_label', label: 'Stat 2 Label', type: 'text', default: 'Alumni Network' },
+                ]
             }
         ]
     },
@@ -157,6 +186,32 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                     { key: 'title', label: 'Page Title', type: 'text', default: 'Contact Us' },
                     { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: "Get In Touch With Us - We're Here To Help With Your Queries And Admissions" },
                     { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
+                ]
+            },
+            {
+                id: 'contact_cards',
+                title: 'Contact Information Cards',
+                fields: [
+                    { key: 'contact_cards', label: 'Main Contact Cards', type: 'contact_info_list', default: [] }
+                ]
+            },
+            {
+                id: 'quick_contacts',
+                title: 'Quick Contact Sidebar',
+                fields: [
+                    { key: 'quick_contacts', label: 'Manage Quick Contacts', type: 'contact_info_list', default: [] }
+                ]
+            },
+            {
+                id: 'visit_campus',
+                title: 'Visit Our Campus (Bottom Section)',
+                fields: [
+                    { key: 'visit_title', label: 'Section Title', type: 'text', default: 'Visit Our Campus' },
+                    { key: 'visit_subtitle', label: 'Subtitle', type: 'textarea', default: 'We welcome you to visit our campus and experience the vibrant learning environment. Our admission counselors are available to guide you through our programs and facilities.' },
+                    { key: 'visit_cta1_text', label: 'Button 1 Text', type: 'text', default: 'Schedule A Campus Tour' },
+                    { key: 'visit_cta1_link', label: 'Button 1 Link', type: 'text', default: '#' },
+                    { key: 'visit_cta2_text', label: 'Button 2 Text', type: 'text', default: 'Download Brochure' },
+                    { key: 'visit_cta2_link', label: 'Button 2 Link', type: 'text', default: '#' }
                 ]
             }
         ]
@@ -249,6 +304,13 @@ const PAGE_CONFIG: Record<string, PageConfig> = {
                     { key: 'subtitle', label: 'Subtitle', type: 'textarea', default: 'Access Important Resources, Forms, And Information For Your Academic Journey' },
                     { key: 'hero_bg', label: 'Hero Background Image', type: 'image', default: '' }
                 ]
+            },
+            {
+                id: 'faqs',
+                title: 'Frequently Asked Questions',
+                fields: [
+                    { key: 'faqs', label: 'Manage FAQs', type: 'faq_list', default: [] }
+                ]
             }
         ]
     }
@@ -266,6 +328,152 @@ const AVAILABLE_PAGES = [
     { id: 'page_student_corner', name: 'Student Corner', description: 'Resources and downloads', path: '/student-corner' },
     { id: 'page_contact', name: 'Contact Page', description: 'Headlines and contact information', path: '/contact' }
 ];
+
+// FAQ List Editor Component
+const FAQListEditor = ({ label, items, onChange }: { label: string, items: any[], onChange: (items: any[]) => void }) => {
+    const [newQ, setNewQ] = useState('');
+    const [newA, setNewA] = useState('');
+
+    const addItem = () => {
+        if (newQ.trim() && newA.trim()) {
+            onChange([...items, { question: newQ.trim(), answer: newA.trim() }]);
+            setNewQ('');
+            setNewA('');
+        }
+    };
+
+    const removeItem = (index: number) => {
+        onChange(items.filter((_, i) => i !== index));
+    };
+
+    return (
+        <div className="space-y-4">
+            <label className="block text-sm font-bold text-gray-700">{label}</label>
+            <div className="bg-blue-50/50 p-4 rounded-xl border-2 border-blue-100 space-y-3">
+                <input
+                    type="text"
+                    value={newQ}
+                    onChange={(e) => setNewQ(e.target.value)}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg text-sm"
+                    placeholder="Enter Question..."
+                />
+                <textarea
+                    value={newA}
+                    onChange={(e) => setNewA(e.target.value)}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg text-sm"
+                    placeholder="Enter Answer..."
+                    rows={2}
+                />
+                <button
+                    type="button"
+                    onClick={addItem}
+                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-bold transition-colors"
+                >
+                    Add FAQ
+                </button>
+            </div>
+            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
+                {items?.map((item, index) => (
+                    <div key={index} className="flex justify-between items-start gap-4 bg-white p-4 rounded-xl border-2 border-gray-100 shadow-sm transition-all hover:border-blue-200">
+                        <div className="flex-1">
+                            <div className="font-bold text-sm text-blue-900 mb-1">Q: {item.question}</div>
+                            <div className="text-xs text-gray-600">A: {item.answer}</div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => removeItem(index)}
+                            className="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                ))}
+                {(!items || items.length === 0) && (
+                    <div className="text-center py-8 text-gray-400 text-sm italic">
+                        No FAQs added yet. Use the fields above to add one.
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+// Contact Info List Editor Component
+const ContactInfoListEditor = ({ label, items, onChange }: { label: string, items: any[], onChange: (items: any[]) => void }) => {
+    const [newTitle, setNewTitle] = useState('');
+    const [newDetails, setNewDetails] = useState('');
+    const [newIcon, setNewIcon] = useState('MapPin'); // Default
+
+    const addItem = () => {
+        if (newTitle.trim() && newDetails.trim()) {
+            onChange([...items, { title: newTitle.trim(), details: newDetails.trim(), icon: newIcon }]);
+            setNewTitle('');
+            setNewDetails('');
+            setNewIcon('MapPin');
+        }
+    };
+
+    const removeItem = (index: number) => {
+        onChange(items.filter((_, i) => i !== index));
+    };
+
+    return (
+        <div className="space-y-4">
+            <label className="block text-sm font-bold text-gray-700">{label}</label>
+            <div className="bg-blue-50/50 p-4 rounded-xl border-2 border-blue-100 space-y-3">
+                <input
+                    type="text"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg text-sm"
+                    placeholder="Card Title (e.g. Address)"
+                />
+                <textarea
+                    value={newDetails}
+                    onChange={(e) => setNewDetails(e.target.value)}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg text-sm"
+                    placeholder="Small Details (use \n for line breaks)..."
+                    rows={2}
+                />
+                <select 
+                    value={newIcon} 
+                    onChange={(e) => setNewIcon(e.target.value)}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg text-sm"
+                >
+                    <option value="MapPin">Location Icon</option>
+                    <option value="Phone">Phone Icon</option>
+                    <option value="Mail">Email Icon</option>
+                    <option value="Clock">Clock Icon</option>
+                </select>
+                <button
+                    type="button"
+                    onClick={addItem}
+                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-bold transition-colors"
+                >
+                    Add Contact Card
+                </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
+                {items?.map((item, index) => (
+                    <div key={index} className="flex justify-between items-start gap-4 bg-white p-4 rounded-xl border-2 border-gray-100 shadow-sm transition-all hover:border-blue-200">
+                        <div className="flex-1">
+                            <div className="font-bold text-sm text-blue-900 mb-1">{item.title}</div>
+                            <div className="text-xs text-gray-600 whitespace-pre-line">{item.details}</div>
+                            <div className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-wider">Icon: {item.icon}</div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => removeItem(index)}
+                            className="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 export default function PageContentManager() {
     const { toast } = useToast();
@@ -508,6 +716,20 @@ export default function PageContentManager() {
                                                                 </button>
                                                             )}
                                                         </div>
+                                                    )}
+                                                    {field.type === 'faq_list' && (
+                                                        <FAQListEditor
+                                                            label={field.label}
+                                                            items={content[field.key] || []}
+                                                            onChange={(items) => setContent({ ...content, [field.key]: items })}
+                                                        />
+                                                    )}
+                                                    {field.type === 'contact_info_list' && (
+                                                        <ContactInfoListEditor
+                                                            label={field.label}
+                                                            items={content[field.key] || []}
+                                                            onChange={(items) => setContent({ ...content, [field.key]: items })}
+                                                        />
                                                     )}
                                                 </div>
                                             ))}

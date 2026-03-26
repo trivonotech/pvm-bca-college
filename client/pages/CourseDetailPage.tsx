@@ -21,6 +21,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 export default function CourseDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -134,7 +135,7 @@ export default function CourseDetailPage() {
                         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
                             <div>
                                 <h2 className="text-3xl font-bold text-[#0B0B3B] mb-6">Course Overview</h2>
-                                <p className="text-gray-700 mb-4 leading-relaxed whitespace-pre-line">
+                                <p className="text-gray-700 mb-4 leading-relaxed whitespace-pre-line text-justify">
                                     {course.description}
                                 </p>
 
@@ -168,7 +169,7 @@ export default function CourseDetailPage() {
             )}
 
             {/* Objectives */}
-            {isVisible('courseObjectives') && (
+            {isVisible('courseObjectives') && course.objectives && course.objectives.length > 0 && (
                 <section className="py-16 bg-[#FDFDFF]">
                     <div className="container mx-auto px-4">
                         <div className="max-w-6xl mx-auto">
@@ -176,17 +177,14 @@ export default function CourseDetailPage() {
                                 <h2 className="text-3xl font-bold text-[#0B0B3B] mb-4">Course Objectives</h2>
                                 <div className="w-20 h-1 bg-[#FF4040] mx-auto rounded-full"></div>
                             </div>
-                            {/* Objectives (Dynamic) */}
-                            {course.objectives && course.objectives.length > 0 && (
-                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {course.objectives.map((obj: string, i: number) => (
-                                        <div key={i} className="flex items-start gap-4 p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                                            <CheckCircle2 className="w-6 h-6 text-[#0B0B3B] shrink-0 mt-1" />
-                                            <p className="text-gray-700">{obj}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {course.objectives.map((obj: string, i: number) => (
+                                    <div key={i} className="flex items-start gap-4 p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                                        <CheckCircle2 className="w-6 h-6 text-[#0B0B3B] shrink-0 mt-1" />
+                                        <p className="text-gray-700">{obj}</p>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -217,27 +215,46 @@ export default function CourseDetailPage() {
 
                                 <h2 className="text-3xl font-bold text-[#0B0B3B] mb-6">Admission Process</h2>
                                 <div className="space-y-6">
-                                    <div className="flex gap-4">
-                                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#0B0B3B] text-white flex items-center justify-center font-bold">1</div>
-                                        <div>
-                                            <h4 className="text-lg font-bold text-[#0B0B3B]">Fill Admission Form</h4>
-                                            <p className="text-gray-600">Complete the offline admission form available at the college office.</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#0B0B3B] text-white flex items-center justify-center font-bold">2</div>
-                                        <div>
-                                            <h4 className="text-lg font-bold text-[#0B0B3B]">Submit Documents</h4>
-                                            <p className="text-gray-600">Submit all required original documents along with photocopies.</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#0B0B3B] text-white flex items-center justify-center font-bold">3</div>
-                                        <div>
-                                            <h4 className="text-lg font-bold text-[#0B0B3B]">Confirm Admission</h4>
-                                            <p className="text-gray-600">Pay the fees to confirm your seat.</p>
-                                        </div>
-                                    </div>
+                                    {course.admissionProcess && course.admissionProcess.length > 0 ? (
+                                        course.admissionProcess.map((step: any, i: number) => {
+                                            const title = typeof step === 'string' ? step.split(':')[0] : step.title;
+                                            const description = typeof step === 'string' ? step.split(':').slice(1).join(':').trim() || step : step.description;
+                                            
+                                            return (
+                                                <div key={i} className="flex gap-4">
+                                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#0B0B3B] text-white flex items-center justify-center font-bold">{i + 1}</div>
+                                                    <div>
+                                                        <h4 className="text-lg font-bold text-[#0B0B3B]">{title}</h4>
+                                                        <p className="text-gray-600">{description}</p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    ) : (
+                                        <>
+                                            <div className="flex gap-4">
+                                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#0B0B3B] text-white flex items-center justify-center font-bold">1</div>
+                                                <div>
+                                                    <h4 className="text-lg font-bold text-[#0B0B3B]">Fill Admission Form</h4>
+                                                    <p className="text-gray-600">Complete the offline admission form available at the college office.</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-4">
+                                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#0B0B3B] text-white flex items-center justify-center font-bold">2</div>
+                                                <div>
+                                                    <h4 className="text-lg font-bold text-[#0B0B3B]">Submit Documents</h4>
+                                                    <p className="text-gray-600">Submit all required original documents along with photocopies.</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-4">
+                                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#0B0B3B] text-white flex items-center justify-center font-bold">3</div>
+                                                <div>
+                                                    <h4 className="text-lg font-bold text-[#0B0B3B]">Confirm Admission</h4>
+                                                    <p className="text-gray-600">Pay the fees to confirm your seat.</p>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 
@@ -247,7 +264,7 @@ export default function CourseDetailPage() {
                                     Required Documents
                                 </h3>
                                 <ul className="grid gap-3">
-                                    {[
+                                    {(course.requiredDocuments && course.requiredDocuments.length > 0 ? course.requiredDocuments : [
                                         "Passport-size photos",
                                         "School Leaving Certificate (LC)",
                                         "SSC Marksheet",
@@ -255,7 +272,7 @@ export default function CourseDetailPage() {
                                         "Aadhar Card",
                                         "Caste Certificate",
                                         "Income Certificate"
-                                    ].map((doc, i) => (
+                                    ]).map((doc, i) => (
                                         <li key={i} className="flex items-center gap-3 text-gray-700 bg-white p-3 rounded-lg shadow-sm">
                                             <CheckCircle2 className="w-4 h-4 text-green-500" />
                                             {doc}
@@ -474,24 +491,25 @@ export default function CourseDetailPage() {
             {isVisible('careerFees') && (
                 <section className="py-16 bg-[#FFF9E5]">
                     <div className="container mx-auto px-4">
-                        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
+                    <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
+                        {course.careerOpportunities && course.careerOpportunities.length > 0 && (
                             <div>
                                 <h2 className="text-3xl font-bold text-[#0B0B3B] mb-6">Career Opportunities</h2>
-                                {course.careerOpportunities && course.careerOpportunities.length > 0 ? (
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {course.careerOpportunities.map((career: string, i: number) => (
-                                            <div key={i} className="bg-white p-4 rounded-xl shadow-sm border border-orange-100 flex items-center gap-3">
-                                                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                                                <span className="font-medium text-[#0B0B3B]">{career}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-gray-600">Career opportunities will be updated soon.</p>
-                                )}
+                                <div className="grid grid-cols-2 gap-4">
+                                    {course.careerOpportunities.map((career: string, i: number) => (
+                                        <div key={i} className="bg-white p-4 rounded-xl shadow-sm border border-orange-100 flex items-center gap-3">
+                                            <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                            <span className="font-medium text-[#0B0B3B]">{career}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
+                        )}
 
-                            <div className="bg-white p-8 rounded-3xl shadow-lg border-2 border-[#0B0B3B] relative overflow-hidden">
+                        <div className={cn(
+                            "bg-white p-8 rounded-3xl shadow-lg border-2 border-[#0B0B3B] relative overflow-hidden",
+                            (!course.careerOpportunities || course.careerOpportunities.length === 0) && "md:col-span-2 max-w-2xl mx-auto w-full"
+                        )}>
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-100 rounded-bl-full -mr-16 -mt-16 z-0"></div>
                                 <h2 className="text-3xl font-bold text-[#0B0B3B] mb-6 relative z-10">Fee Structure</h2>
                                 <div className="text-center py-8 relative z-10">

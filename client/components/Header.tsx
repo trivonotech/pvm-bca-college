@@ -42,11 +42,11 @@ export default function Header() {
     return () => unsubscribe();
   }, []);
 
-  // Fetch Site Logo
+  // Fetch Header Logo
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
       if (docSnap.exists()) {
-        setDynamicLogo(docSnap.data().siteLogo || null);
+        setDynamicLogo(docSnap.data().headerLogo || docSnap.data().siteLogo || null);
       }
     });
     return () => unsubscribe();

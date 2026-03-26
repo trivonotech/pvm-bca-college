@@ -1,20 +1,40 @@
+import { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+
 export default function StatsSection() {
+  const [content, setContent] = useState<any>(() => {
+    const cached = localStorage.getItem('cache_home_page_content');
+    return cached ? JSON.parse(cached) : null;
+  });
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, 'page_content', 'page_home'), (doc) => {
+      if (doc.exists()) {
+        const data = doc.data();
+        setContent(data);
+        localStorage.setItem('cache_home_page_content', JSON.stringify(data));
+      }
+    });
+    return () => unsub();
+  }, []);
+
   const stats = [
     {
-      number: '10000+',
-      label: 'Students shown faith in us',
+      number: content?.stat1_number || '10000+',
+      label: content?.stat1_label || 'Students shown faith in us',
     },
     {
-      number: '50',
-      label: 'Events',
+      number: content?.stat2_number || '50',
+      label: content?.stat2_label || 'Events',
     },
     {
-      number: '15+',
-      label: 'Experience',
+      number: content?.stat3_number || '15+',
+      label: content?.stat3_label || 'Experience',
     },
     {
-      number: '10+',
-      label: 'Courses Offered',
+      number: content?.stat4_number || '10+',
+      label: content?.stat4_label || 'Courses Offered',
     },
   ];
 

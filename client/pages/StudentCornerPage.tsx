@@ -4,7 +4,7 @@ import { MessageSquare, BookOpen, Link as LinkIcon, HelpCircle } from 'lucide-re
 import { useState, useEffect } from 'react';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp, doc, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { useToast } from "@/components/ui/use-toast";
 
 export default function StudentCornerPage() {
@@ -15,7 +15,15 @@ export default function StudentCornerPage() {
         return cached ? JSON.parse(cached) : null;
     });
 
+    const [formOptions, setFormOptions] = useState<any>(null);
+
     useEffect(() => {
+        const unsubForm = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
+            if (docSnap.exists()) {
+                setFormOptions(docSnap.data());
+            }
+        });
+        
         const unsub = onSnapshot(doc(db, 'page_content', 'page_student_corner'), (doc) => {
             if (doc.exists()) {
                 const data = doc.data();
@@ -23,7 +31,10 @@ export default function StudentCornerPage() {
                 localStorage.setItem('cache_student_corner_content', JSON.stringify(data));
             }
         });
-        return () => unsub();
+        return () => {
+            unsub();
+            unsubForm();
+        };
     }, []);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,7 +92,7 @@ export default function StudentCornerPage() {
         { name: 'Hostel Portal', url: '#', icon: '🏠' }
     ];
 
-    const faqs = [
+    const faqs = content?.faqs && content.faqs.length > 0 ? content.faqs : [
         {
             question: 'How can I access the digital library?',
             answer: 'You can access the digital library using your student ID and password through the E-Library link in the important links section.'
@@ -192,10 +203,9 @@ export default function StudentCornerPage() {
                                                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#BFD8FF] focus:outline-none"
                                             >
                                                 <option value="">Select your course</option>
-                                                <option value="BBA">BBA</option>
-                                                <option value="B.Com">B.Com</option>
-                                                <option value="BCA">BCA</option>
-                                                <option value="B.Sc">B.Sc</option>
+                                                {(formOptions?.formCourses || ['BBA', 'B.Com', 'BCA', 'B.Sc']).map((course: string, i: number) => (
+                                                    <option key={i} value={course.toLowerCase()}>{course}</option>
+                                                ))}
                                             </select>
                                         </div>
                                         <div>
@@ -206,10 +216,10 @@ export default function StudentCornerPage() {
                                                 onChange={(e) => setFormData({ ...formData, feedbackType: e.target.value })}
                                                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#BFD8FF] focus:outline-none"
                                             >
-                                                <option value="suggestion">Suggestion</option>
-                                                <option value="complaint">Complaint</option>
-                                                <option value="appreciation">Appreciation</option>
-                                                <option value="query">Query</option>
+                                                <option value="">Select feedback type</option>
+                                                {(formOptions?.formFeedbackTypes || ['Suggestion', 'Complaint', 'Appreciation', 'Query']).map((type: string, i: number) => (
+                                                    <option key={i} value={type.toLowerCase()}>{type}</option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>

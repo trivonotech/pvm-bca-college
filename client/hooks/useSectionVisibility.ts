@@ -55,6 +55,11 @@ export interface SectionVisibility {
     contactForm?: boolean;
     contactInfo?: boolean;
     locationMap?: boolean;
+    // Admission Page
+    admissionHero?: boolean;
+    admissionDates?: boolean;
+    admissionSteps?: boolean;
+    admissionScholarships?: boolean;
 
     [key: string]: boolean | undefined;
 }

@@ -28,6 +28,11 @@ interface SyllabusSemester {
     courses: Subject[];
 }
 
+interface AdmissionStep {
+    title: string;
+    description: string;
+}
+
 interface Course {
     id: string;
     name: string;
@@ -42,6 +47,8 @@ interface Course {
     image: string;
     objectives: string[];
     careerOpportunities: string[];
+    admissionProcess: AdmissionStep[];
+    requiredDocuments: string[];
     syllabus: SyllabusSemester[];
     createdAt?: unknown;
 }
@@ -81,6 +88,61 @@ const DynamicListInput = ({ label, items, onChange, placeholder }: { label: stri
                     <li key={index} className="flex justify-between items-center bg-gray-50 p-2 rounded-lg border border-gray-100">
                         <span className="text-sm text-gray-700">{item}</span>
                         <button type="button" onClick={() => removeItem(index)} className="text-red-500 hover:text-red-700">
+                            <X className="w-4 h-4" />
+                        </button>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+const ProcessStepEditor = ({ label, items, onChange }: { label: string, items: AdmissionStep[], onChange: (items: AdmissionStep[]) => void }) => {
+    const [newTitle, setNewTitle] = useState('');
+    const [newDesc, setNewDesc] = useState('');
+
+    const addItem = () => {
+        if (newTitle.trim()) {
+            onChange([...items, { title: newTitle.trim(), description: newDesc.trim() }]);
+            setNewTitle('');
+            setNewDesc('');
+        }
+    };
+
+    const removeItem = (index: number) => {
+        onChange(items.filter((_, i) => i !== index));
+    };
+
+    return (
+        <div className="space-y-4">
+            <label className="block text-sm font-medium text-gray-700">{label}</label>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                <input
+                    type="text"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    className="w-full p-2 border rounded-lg text-sm"
+                    placeholder="Step Title (e.g. Fill Form)"
+                />
+                <textarea
+                    value={newDesc}
+                    onChange={(e) => setNewDesc(e.target.value)}
+                    className="w-full p-2 border rounded-lg text-sm"
+                    placeholder="Step Description/Paragraph..."
+                    rows={2}
+                />
+                <button type="button" onClick={addItem} className="w-full bg-[#0B0B3B] text-white px-4 py-2 rounded-lg hover:bg-[#1a1a5e] text-sm font-bold">
+                    Add Step
+                </button>
+            </div>
+            <ul className="space-y-3">
+                {items.map((item, index) => (
+                    <li key={index} className="flex justify-between items-start gap-4 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                        <div className="flex-1">
+                            <div className="font-bold text-sm text-[#0B0B3B]">{item.title}</div>
+                            <div className="text-xs text-gray-500 line-clamp-2">{item.description}</div>
+                        </div>
+                        <button type="button" onClick={() => removeItem(index)} className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded-full">
                             <X className="w-4 h-4" />
                         </button>
                     </li>
@@ -230,7 +292,8 @@ export default function CoursesManager() {
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
     const [formData, setFormData] = useState<Partial<Course>>({
         name: '', code: '', order: 0, duration: '', eligibility: '', seats: 60, fees: '', description: '', image: '',
-        objectives: [], careerOpportunities: [], syllabus: [], eligibilityDetails: []
+        objectives: [], careerOpportunities: [], syllabus: [], eligibilityDetails: [],
+        admissionProcess: [], requiredDocuments: []
     });
 
     // Delete State
@@ -307,7 +370,8 @@ export default function CoursesManager() {
     const resetForm = () => {
         setFormData({
             name: '', code: '', order: 0, duration: '', eligibility: '', seats: 60, fees: '', description: '', image: '',
-            objectives: [], careerOpportunities: [], syllabus: [], eligibilityDetails: []
+            objectives: [], careerOpportunities: [], syllabus: [], eligibilityDetails: [],
+            admissionProcess: [], requiredDocuments: []
         });
     };
 
@@ -328,6 +392,8 @@ export default function CoursesManager() {
             // Ensure arrays exist if migrating from old data
             objectives: course.objectives || [],
             careerOpportunities: course.careerOpportunities || [],
+            admissionProcess: course.admissionProcess || [],
+            requiredDocuments: course.requiredDocuments || [],
             syllabus: course.syllabus || [],
             eligibilityDetails: course.eligibilityDetails || []
         });
@@ -523,6 +589,17 @@ export default function CoursesManager() {
                                                 placeholder="Add a career role..."
                                                 items={formData.careerOpportunities || []}
                                                 onChange={items => setFormData({ ...formData, careerOpportunities: items })}
+                                            />
+                                            <ProcessStepEditor
+                                                label="Admission Process Steps"
+                                                items={formData.admissionProcess || []}
+                                                onChange={items => setFormData({ ...formData, admissionProcess: items })}
+                                            />
+                                            <DynamicListInput
+                                                label="Required Documents"
+                                                placeholder="Add a required document..."
+                                                items={formData.requiredDocuments || []}
+                                                onChange={items => setFormData({ ...formData, requiredDocuments: items })}
                                             />
                                             <DynamicListInput
                                                 label="Eligibility Criteria (Detailed)"

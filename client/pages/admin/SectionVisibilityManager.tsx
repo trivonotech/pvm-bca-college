@@ -45,22 +45,33 @@ export default function SectionVisibilityManager() {
         newsHero: true,
         latestNews: true,
         upcomingEvents: true,
-        pressReleases: true,
+        academicAnnouncements: true,
+        newsNewsletter: true,
         // Examinations Page
         examinationsHero: true,
-        examSchedule: true,
+        academicCalendar: true,
         examNotices: true,
-        results: true,
+        examinationResults: true,
+        examQuickLinks: true,
         // Placements Page
         placementsHero: true,
         placementStats: true,
         recruiters: true,
         placementRecords: true,
+        placementSuccessStories: true,
+        topPlacementProfiles: true,
         // Contact Page
         contactHero: true,
         contactForm: true,
         contactInfo: true,
         locationMap: true,
+        contactVisitCampus: true,
+        // Student Corner Page
+        studentCornerHero: true,
+        feedbackForm: true,
+        academicSupport: true,
+        importantLinks: true,
+        faqSection: true,
     });
 
     const [loading, setLoading] = useState(true);
@@ -134,27 +145,39 @@ export default function SectionVisibilityManager() {
 
         // News Page Sections
         { key: 'newsHero', label: 'Hero Section', page: 'News', description: 'News page hero banner' },
-        { key: 'latestNews', label: 'Latest News & Announcements', page: 'News', description: 'Recent college news and updates' },
-        { key: 'upcomingEvents', label: 'Upcoming Events Calendar', page: 'News', description: 'Events calendar and schedule' },
-        { key: 'pressReleases', label: 'Press Releases', page: 'News', description: 'Official press releases' },
+        { key: 'latestNews', label: 'Study-Related News', page: 'News', description: 'Dynamic news articles from Firebase' },
+        { key: 'academicAnnouncements', label: 'Academic Announcements', page: 'News', description: 'Important notifications for students' },
+        { key: 'upcomingEvents', label: 'Upcoming Events & Notices', page: 'News', description: 'Upcoming calendar events' },
+        { key: 'newsNewsletter', label: 'Newsletter Signup', page: 'News', description: 'Email subscription section' },
 
         // Examinations Page Sections
         { key: 'examinationsHero', label: 'Hero Section', page: 'Examinations', description: 'Examinations page hero banner' },
-        { key: 'examSchedule', label: 'Exam Schedule', page: 'Examinations', description: 'Examination timetable' },
-        { key: 'examNotices', label: 'Exam Notices', page: 'Examinations', description: 'Important examination notices' },
-        { key: 'results', label: 'Results Section', page: 'Examinations', description: 'Exam results and downloads' },
+        { key: 'academicCalendar', label: 'Academic Calendar', page: 'Examinations', description: 'Academic year schedule' },
+        { key: 'examNotices', label: 'Exam Notices', page: 'Examinations', description: 'Important examination notifications' },
+        { key: 'examinationResults', label: 'Result Updates', page: 'Examinations', description: 'Exam results and mark sheets' },
+        { key: 'examQuickLinks', label: 'Quick Links', page: 'Examinations', description: 'Hall tickets and guidelines' },
 
         // Placements Page Sections
         { key: 'placementsHero', label: 'Hero Section', page: 'Placements', description: 'Placements page hero banner' },
         { key: 'placementStats', label: 'Placement Statistics', page: 'Placements', description: 'Placement percentages and data' },
         { key: 'recruiters', label: 'Top Recruiters', page: 'Placements', description: 'Companies hiring our students' },
         { key: 'placementRecords', label: 'Placement Records', page: 'Placements', description: 'Student placement details' },
+        { key: 'placementSuccessStories', label: 'Success Stories', page: 'Placements', description: 'Student testimonial stories' },
+        { key: 'topPlacementProfiles', label: 'Top Profiles', page: 'Placements', description: 'Highest package achievers' },
 
         // Contact Page Sections
         { key: 'contactHero', label: 'Hero Section', page: 'Contact', description: 'Contact page hero banner' },
         { key: 'contactForm', label: 'Contact Form', page: 'Contact', description: 'Inquiry and contact form' },
         { key: 'contactInfo', label: 'Contact Information', page: 'Contact', description: 'Address, phone, email details' },
         { key: 'locationMap', label: 'Location Map', page: 'Contact', description: 'Google Maps integration' },
+        { key: 'contactVisitCampus', label: 'Visit Campus Section', page: 'Contact', description: 'Bottom call-to-action section with buttons' },
+
+        // Student Corner Page Sections
+        { key: 'studentCornerHero', label: 'Hero Section', page: 'Student Corner', description: 'Student corner hero banner' },
+        { key: 'feedbackForm', label: 'Feedback Form', page: 'Student Corner', description: 'Student feedback and suggestion form' },
+        { key: 'academicSupport', label: 'Academic Support', page: 'Student Corner', description: 'Library, counseling, and IT support' },
+        { key: 'importantLinks', label: 'Important Links', page: 'Student Corner', description: 'Quick access to essential portals' },
+        { key: 'faqSection', label: 'FAQ Section', page: 'Student Corner', description: 'Frequently Asked Questions' },
     ];
 
     const toggleSection = (key: string) => {
