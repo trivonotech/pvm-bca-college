@@ -10,20 +10,23 @@ import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 export default function ContactPage() {
     const { isVisible } = useSectionVisibility();
     const [content, setContent] = useState<any>(null);
-    const [missionPoints, setMissionPoints] = useState<string[]>([]);
+    const [formOptions, setFormOptions] = useState<any>(null);
+
     useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const docRef = doc(db, 'settings', 'general');
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists() && docSnap.data().mapUrl) {
-                    setMapUrl(docSnap.data().mapUrl);
-                }
-            } catch (error) {
-                // Silently fail, use default mapUrl
+        const fetchFormOptions = async () => {
+            const docSnap = await getDoc(doc(db, 'settings', 'general'));
+            if (docSnap.exists()) {
+                setFormOptions(docSnap.data());
             }
         };
-        fetchSettings();
+        fetchFormOptions();
+        const unsubSettings = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                setFormOptions(data);
+                if (data.mapUrl) setMapUrl(data.mapUrl);
+            }
+        });
 
         // New Page Content Listener
         const unsub = onSnapshot(doc(db, 'page_content', 'page_contact'), (doc) => {
@@ -31,7 +34,10 @@ export default function ContactPage() {
                 setContent(doc.data());
             }
         });
-        return () => unsub();
+        return () => {
+            unsub();
+            unsubSettings();
+        };
     }, []);
 
     useEffect(() => {
@@ -87,32 +93,26 @@ export default function ContactPage() {
         }
     };
 
-    const contactInfo = [
-        {
-            icon: MapPin,
-            title: 'Address',
-            details: 'Main Campus Road, Education City, State - 123456',
-            color: 'from-[#BFD8FF] to-[#E5E7EB]'
-        },
-        {
-            icon: Phone,
-            title: 'Phone',
-            details: '+91-XXXX-XXXXXX\n+91-YYYY-YYYYYY',
-            color: 'from-[#FFF5F5] to-[#FFE5E5]'
-        },
-        {
-            icon: Mail,
-            title: 'Email',
-            details: 'admissions@institute.edu\ninfo@institute.edu',
-            color: 'from-[#FFF9E5] to-[#FFEED5]'
-        },
-        {
-            icon: Clock,
-            title: 'Office Hours',
-            details: 'Mon - Fri: 9:00 AM - 5:00 PM\nSat: 9:00 AM - 1:00 PM',
-            color: 'from-[#E5F9E5] to-[#D5F5D5]'
-        }
+    const iconMap: Record<string, any> = { MapPin, Phone, Mail, Clock };
+    const colors = [
+        'from-[#BFD8FF] to-[#E5E7EB]',
+        'from-[#FFF5F5] to-[#FFE5E5]',
+        'from-[#FFF9E5] to-[#FFEED5]',
+        'from-[#E5F9E5] to-[#D5F5D5]'
     ];
+
+    const contactCards = content?.contact_cards?.length > 0 ? content.contact_cards.map((card: any, i: number) => ({
+        ...card,
+        icon: iconMap[card.icon] || MapPin,
+        color: colors[i % colors.length]
+    })) : [
+        { icon: MapPin, title: 'Address', details: 'Main Campus Road, Education City, State - 123456', color: colors[0] },
+        { icon: Phone, title: 'Phone', details: '+91-XXXX-XXXXXX\n+91-YYYY-YYYYYY', color: colors[1] },
+        { icon: Mail, title: 'Email', details: 'admissions@institute.edu\ninfo@institute.edu', color: colors[2] },
+        { icon: Clock, title: 'Office Hours', details: 'Mon - Fri: 9:00 AM - 5:00 PM\nSat: 9:00 AM - 1:00 PM', color: colors[3] }
+    ];
+
+    const inquirySubjects = formOptions?.formInquirySubjects || ['Admission Inquiry', 'Course Information', 'Placement Information', 'General Inquiry', 'Other'];
 
     return (
         <div className="min-h-screen bg-white font-poppins">
@@ -160,7 +160,7 @@ export default function ContactPage() {
                     <div className="container mx-auto px-4">
                         <div className="max-w-6xl mx-auto">
                             <div className="grid md:grid-cols-4 gap-6">
-                                {contactInfo.map((info, idx) => (
+                                {contactCards.map((info: any, idx: number) => (
                                     <div key={idx} className={`bg-gradient-to-br ${info.color} rounded-3xl p-8 shadow-xl text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-2`}>
                                         <div className="p-4 bg-white rounded-2xl w-16 h-16 flex items-center justify-center mx-auto mb-4">
                                             <info.icon className="w-8 h-8 text-[#0B0B3B]" />
@@ -241,11 +241,9 @@ export default function ContactPage() {
                                                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#BFD8FF] focus:outline-none"
                                                 >
                                                     <option value="">Select a subject</option>
-                                                    <option value="admission">Admission Inquiry</option>
-                                                    <option value="courses">Course Information</option>
-                                                    <option value="placement">Placement Information</option>
-                                                    <option value="general">General Inquiry</option>
-                                                    <option value="other">Other</option>
+                                                    {inquirySubjects.map((subject: string, i: number) => (
+                                                        <option key={i} value={subject.toLowerCase()}>{subject}</option>
+                                                    ))}
                                                 </select>
                                             </div>
 
@@ -302,18 +300,30 @@ export default function ContactPage() {
                                         <div className="bg-gradient-to-r from-[#FF4040] to-[#c03030] rounded-3xl p-6 shadow-2xl text-white">
                                             <h3 className="text-xl font-bold mb-4">Quick Contacts</h3>
                                             <div className="space-y-3">
-                                                <div className="bg-white/20 rounded-xl p-3">
-                                                    <div className="font-bold mb-1 text-sm">Admission Office</div>
-                                                    <div className="text-sm">📞 +91-XXXX-XXXXXX</div>
-                                                </div>
-                                                <div className="bg-white/20 rounded-xl p-3">
-                                                    <div className="font-bold mb-1 text-sm">Academic Queries</div>
-                                                    <div className="text-sm">📧 academic@institute.edu</div>
-                                                </div>
-                                                <div className="bg-white/20 rounded-xl p-3">
-                                                    <div className="font-bold mb-1 text-sm">Placement Cell</div>
-                                                    <div className="text-sm">📧 placement@institute.edu</div>
-                                                </div>
+                                                {content?.quick_contacts?.length > 0 ? content.quick_contacts.map((contact: any, idx: number) => (
+                                                    <div key={idx} className="bg-white/20 rounded-xl p-3">
+                                                        <div className="font-bold mb-1 text-sm">{contact.title}</div>
+                                                        <div className="text-sm flex items-start gap-2">
+                                                            <span>{contact.icon === 'Phone' ? '📞' : contact.icon === 'Mail' ? '📧' : contact.icon === 'MapPin' ? '📍' : contact.icon === 'Clock' ? '🕒' : '📞'}</span>
+                                                            <span className="whitespace-pre-line">{contact.details}</span>
+                                                        </div>
+                                                    </div>
+                                                )) : (
+                                                    <>
+                                                        <div className="bg-white/20 rounded-xl p-3">
+                                                            <div className="font-bold mb-1 text-sm">Admission Office</div>
+                                                            <div className="text-sm">📞 +91-XXXX-XXXXXX</div>
+                                                        </div>
+                                                        <div className="bg-white/20 rounded-xl p-3">
+                                                            <div className="font-bold mb-1 text-sm">Academic Queries</div>
+                                                            <div className="text-sm">📧 academic@institute.edu</div>
+                                                        </div>
+                                                        <div className="bg-white/20 rounded-xl p-3">
+                                                            <div className="font-bold mb-1 text-sm">Placement Cell</div>
+                                                            <div className="text-sm">📧 placement@institute.edu</div>
+                                                        </div>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -327,28 +337,35 @@ export default function ContactPage() {
             )}
 
             {/* Visit Us Section */}
-            <section className="py-20 bg-gradient-to-b from-[#FDFDFF] to-white">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <h2 className="text-3xl md:text-4xl font-extrabold text-[#0B0B3B] mb-6">
-                            Visit Our Campus
-                        </h2>
-                        <div className="w-24 h-1 bg-[#FF4040] mx-auto rounded-full mb-8"></div>
-                        <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-                            We welcome you to visit our campus and experience the vibrant learning environment.
-                            Our admission counselors are available to guide you through our programs and facilities.
-                        </p>
-                        <div className="flex flex-col md:flex-row gap-6 justify-center">
-                            <button className="px-8 py-4 bg-[#0B0B3B] text-white rounded-xl font-bold hover:bg-[#1a1a5e] transition-colors shadow-lg">
-                                Schedule A Campus Tour
-                            </button>
-                            <button className="px-8 py-4 bg-white border-2 border-[#0B0B3B] text-[#0B0B3B] rounded-xl font-bold hover:bg-[#BFD8FF] transition-colors shadow-lg">
-                                Download Brochure
-                            </button>
+            {isVisible('contactVisitCampus') && (
+                <section className="py-20 bg-gradient-to-b from-[#FDFDFF] to-white">
+                    <div className="container mx-auto px-4">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <h2 className="text-3xl md:text-4xl font-extrabold text-[#0B0B3B] mb-6">
+                                {content?.visit_title || "Visit Our Campus"}
+                            </h2>
+                            <div className="w-24 h-1 bg-[#FF4040] mx-auto rounded-full mb-8"></div>
+                            <p className="text-gray-600 text-lg mb-8 leading-relaxed">
+                                {content?.visit_subtitle || "We welcome you to visit our campus and experience the vibrant learning environment. Our admission counselors are available to guide you through our programs and facilities."}
+                            </p>
+                            <div className="flex flex-col md:flex-row gap-6 justify-center">
+                                <a 
+                                    href={content?.visit_cta1_link || "#"}
+                                    className="inline-block px-8 py-4 bg-[#0B0B3B] text-white rounded-xl font-bold hover:bg-[#1a1a5e] transition-colors shadow-lg"
+                                >
+                                    {content?.visit_cta1_text || "Schedule A Campus Tour"}
+                                </a>
+                                <a 
+                                    href={content?.visit_cta2_link || "#"}
+                                    className="inline-block px-8 py-4 bg-white border-2 border-[#0B0B3B] text-[#0B0B3B] rounded-xl font-bold hover:bg-[#BFD8FF] transition-colors shadow-lg"
+                                >
+                                    {content?.visit_cta2_text || "Download Brochure"}
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
             <Footer />
         </div>

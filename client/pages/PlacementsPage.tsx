@@ -133,7 +133,7 @@ export default function PlacementsPage() {
         <div className="min-h-screen bg-white font-poppins">
             <Header />
 
-            {isVisible('placementHero') && (
+            {isVisible('placementsHero') && (
                 <section className="relative w-full text-white py-20 overflow-hidden">
                     {content?.images?.hero_bg ? (
                         <>
@@ -205,7 +205,7 @@ export default function PlacementsPage() {
                 </section>
             )}
 
-            {isVisible('recruitingPartners') && (
+            {isVisible('recruiters') && (
                 <section className="py-20 bg-white">
                     <div className="container mx-auto px-4">
                         <div className="max-w-6xl mx-auto">

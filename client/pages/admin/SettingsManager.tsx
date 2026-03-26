@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Save, Globe, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, Youtube, Shield, Upload, RotateCcw } from 'lucide-react';
+import { Save, Globe, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, Youtube, Shield, Upload, RotateCcw, X } from 'lucide-react';
 import { compressImage } from '@/utils/imageUtils';
 import SecurityConfigModal from '@/components/admin/SecurityConfigModal';
 import { db } from '@/lib/firebase';
@@ -17,7 +17,10 @@ export default function SettingsManager() {
         sitePhone: '+91 1234567890',
         siteAddress: 'College Address, City, State - 123456',
         siteLogo: '',
+        headerLogo: '',
+        footerLogo: '',
         mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8354345093747!2d144.9537353159042!3d-37.81720974201434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4c2b349649%3A0xb6899234e561db11!2sEnvato!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin',
+        mapPageUrl: 'https://goo.gl/maps/example',
         facebook: 'https://facebook.com/pvmbca',
         twitter: 'https://twitter.com/pvmbca',
         instagram: 'https://instagram.com/pvmbca',
@@ -26,6 +29,10 @@ export default function SettingsManager() {
         heroTitle: 'Transform Your Future with Quality Education',
         heroSubtitle: 'Join India\'s Leading BCA College',
         heroCTA: 'Apply Now',
+        // Form Options
+        formCourses: ['BBA', 'B.Com', 'BCA', 'B.Sc'],
+        formFeedbackTypes: ['Suggestion', 'Complaint', 'Appreciation', 'Query'],
+        formInquirySubjects: ['Admission Inquiry', 'Course Information', 'Placement Information', 'General Inquiry', 'Other']
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -50,22 +57,22 @@ export default function SettingsManager() {
         setFormData(prev => ({ ...prev, mapUrl: extracted }));
     };
 
-    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
         const file = e.target.files?.[0];
         if (!file) return;
         try {
             const base64 = await compressImage(file);
-            setFormData(prev => ({ ...prev, siteLogo: base64 }));
+            setFormData(prev => ({ ...prev, [fieldName]: base64 }));
             toast({
-                title: "Logo Ready",
-                description: "The logo has been processed. Don't forget to save changes.",
+                title: "Image Ready",
+                description: "The image has been processed. Don't forget to save changes.",
                 className: "bg-blue-600 text-white border-none"
             });
         } catch (error) {
-            console.error("Logo upload failed:", error);
+            console.error("Upload failed:", error);
             toast({
                 title: "Error",
-                description: "Failed to process logo image.",
+                description: "Failed to process image.",
                 variant: "destructive"
             });
         }
@@ -150,6 +157,78 @@ export default function SettingsManager() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Logos Section */}
+                    <div className="bg-white rounded-2xl p-6 shadow-lg">
+                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <Upload className="w-6 h-6 text-blue-600" />
+                            Website Logos
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* Header Logo */}
+                            <div className="space-y-3">
+                                <label className="block text-sm font-bold text-gray-700">Header Logo (Nav Bar)</label>
+                                <div className="relative group aspect-video bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden hover:border-blue-400 transition-colors">
+                                    {formData.headerLogo ? (
+                                        <img src={formData.headerLogo} alt="Header Preview" className="w-full h-full object-contain p-4" />
+                                    ) : (
+                                        <div className="text-center p-4">
+                                            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                            <p className="text-xs text-gray-500 font-medium">Click to upload Header Logo</p>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        onChange={(e) => handleImageUpload(e, 'headerLogo')}
+                                        accept="image/*"
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                    />
+                                </div>
+                                {formData.headerLogo && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, headerLogo: '' }))}
+                                        className="text-xs text-red-500 hover:text-red-700 font-bold flex items-center gap-1"
+                                    >
+                                        <RotateCcw className="w-3 h-3" /> Remove
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Footer Logo */}
+                            <div className="space-y-3">
+                                <label className="block text-sm font-bold text-gray-700">Footer Logo</label>
+                                <div className="relative group aspect-video bg-[#0B0B3B] rounded-2xl border-2 border-dashed border-gray-700 flex items-center justify-center overflow-hidden hover:border-blue-400 transition-colors">
+                                    {formData.footerLogo ? (
+                                        <img src={formData.footerLogo} alt="Footer Preview" className="w-full h-full object-contain p-4" />
+                                    ) : (
+                                        <div className="text-center p-4">
+                                            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                            <p className="text-xs text-gray-300 font-medium">Click to upload Footer Logo</p>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        onChange={(e) => handleImageUpload(e, 'footerLogo')}
+                                        accept="image/*"
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                    />
+                                </div>
+                                {formData.footerLogo && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, footerLogo: '' }))}
+                                        className="text-xs text-red-500 hover:text-red-700 font-bold flex items-center gap-1"
+                                    >
+                                        <RotateCcw className="w-3 h-3" /> Remove
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-4 italic">
+                            Tip: For the Header, use a logo that looks good on white/light backgrounds. For the Footer, use one that stands out on dark blue.
+                        </p>
+                    </div>
+
                     {/* Basic Information */}
                     <div className="bg-white rounded-2xl p-6 shadow-lg">
                         <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
@@ -157,43 +236,6 @@ export default function SettingsManager() {
                             Basic Information
                         </h2>
                         <div className="space-y-6">
-                            {/* Logo Upload */}
-                            <div className="flex flex-col md:flex-row items-start gap-6 pb-6 border-b border-gray-100">
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-gray-700">Company Logo</label>
-                                    <div className="relative group w-40 h-40 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden hover:border-blue-400 transition-colors">
-                                        {formData.siteLogo ? (
-                                            <img src={formData.siteLogo} alt="Preview" className="w-full h-full object-contain p-2" />
-                                        ) : (
-                                            <div className="text-center p-4">
-                                                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                                                <p className="text-xs text-gray-500 font-medium">Click to upload logo</p>
-                                            </div>
-                                        )}
-                                        <input
-                                            type="file"
-                                            onChange={handleLogoUpload}
-                                            accept="image/*"
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                        />
-                                    </div>
-                                    {formData.siteLogo && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData(prev => ({ ...prev, siteLogo: '' }))}
-                                            className="text-xs text-red-500 hover:text-red-700 font-bold flex items-center gap-1 mt-2"
-                                        >
-                                            <RotateCcw className="w-3 h-3" /> Reset to Default
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="flex-1 space-y-4 pt-6 md:pt-8">
-                                    <p className="text-sm text-gray-500 italic">
-                                        Note: We recommend a transparent PNG/WebP logo. The image will be automatically optimized for site performance.
-                                    </p>
-                                </div>
-                            </div>
-
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Site Name</label>
                                 <input
@@ -242,36 +284,56 @@ export default function SettingsManager() {
                                     rows={3}
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                                    <MapPin className="w-4 h-4" /> Google Map Embed URL
-                                </label>
-                                <div className="space-y-2">
-                                    <input
-                                        type="text"
-                                        name="mapUrl"
-                                        value={formData.mapUrl}
-                                        onChange={(e) => handleMapExtract(e.target.value)}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none text-sm font-mono transition-colors ${formData.mapUrl && !formData.mapUrl.includes('embed')
-                                            ? 'border-yellow-400 focus:border-yellow-500 bg-yellow-50'
-                                            : 'border-gray-200 focus:border-blue-500'
-                                            }`}
-                                        placeholder="https://www.google.com/maps/embed?..."
-                                    />
-                                    {formData.mapUrl && !formData.mapUrl.includes('embed') && (
-                                        <div className="flex items-start gap-2 text-yellow-700 text-xs bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                                            <Shield className="w-4 h-4 shrink-0 mt-0.5" />
-                                            <p>
-                                                <strong>Warning:</strong> This doesn't look like an embed link.
-                                                Please click the <strong>"Embed a map"</strong> button (the <code className="bg-yellow-100 px-1 rounded">&lt; &gt;</code> icon) in Google Maps, then copy the <strong>HTML</strong> or just the link inside <code>src="..."</code>.
-                                            </p>
-                                        </div>
-                                    )}
-                                    <p className="text-xs text-gray-500">
-                                        Go to Google Maps &gt; Share &gt; Click <strong>"Embed a map"</strong> &gt; Copy HTML.
-                                    </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                                        <MapPin className="w-4 h-4" /> Google Map Embed URL
+                                    </label>
+                                    <div className="space-y-2">
+                                        <input
+                                            type="text"
+                                            name="mapUrl"
+                                            value={formData.mapUrl}
+                                            onChange={(e) => handleMapExtract(e.target.value)}
+                                            className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none text-sm font-mono transition-colors ${formData.mapUrl && !formData.mapUrl.includes('embed')
+                                                ? 'border-yellow-400 focus:border-yellow-500 bg-yellow-50'
+                                                : 'border-gray-200 focus:border-blue-500'
+                                                }`}
+                                            placeholder="https://www.google.com/maps/embed?..."
+                                        />
+                                        <p className="text-[10px] text-gray-500 px-1 italic">
+                                            This is for the interactive map card on the Contact page.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                                        < Globe className="w-4 h-4 t ext-blue-600" /> Google Maps Page/Share Link
+                                    </label>
+                                    <div className="space-y-2">
+                                        <input
+                                            type="text"
+                                            name="mapPageUrl"
+                                            value={formData.mapPageUrl}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none text-sm font-mono"
+                                            placeholder="https://goo.gl/maps/..."
+                                        />
+                                        <p className="text-[10px] text-gray-500 px-1 italic">
+                                            This is for the "Find on Google Maps" buttons in the Footer and Contact page.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
+                            {(formData.mapUrl && !formData.mapUrl.includes('embed')) && (
+                                <div className="flex items-start gap-2 text-yellow-700 text-xs bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                    <Shield className="w-4 h-4 shrink-0 mt-0.5" />
+                                    <p>
+                                        <strong>Warning:</strong> The Embed URL doesn't look correct.
+                                        Please click <strong>"Embed a map"</strong> in Google Maps and copy the <strong>HTML</strong>.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 

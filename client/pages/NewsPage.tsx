@@ -315,7 +315,7 @@ export default function NewsPage() {
 
             {/* Academic Announcements */}
             {/* Academic Announcements */}
-            {isVisible('pressReleases') && (
+            {isVisible('academicAnnouncements') && (
                 <section className="py-20 bg-white">
                     <div className="container mx-auto px-4">
                         <div className="max-w-6xl mx-auto">
@@ -398,32 +398,34 @@ export default function NewsPage() {
                             </div>
 
                             {/* Newsletter Signup */}
-                            <div className="mt-16 bg-gradient-to-r from-[#0B0B3B] to-[#1a1a5e] rounded-3xl p-10 shadow-2xl text-white">
-                                <div className="max-w-3xl mx-auto text-center">
-                                    <Newspaper className="w-16 h-16 mx-auto mb-6" />
-                                    <h3 className="text-3xl font-bold mb-4">Subscribe to Our Newsletter</h3>
-                                    <p className="text-blue-200 mb-8">
-                                        Get the latest news and updates delivered directly to your inbox
-                                    </p>
-                                    <form onSubmit={handleSubscribe} className="flex flex-col md:flex-row gap-4 max-w-xl mx-auto">
-                                        <input
-                                            type="email"
-                                            required
-                                            value={subscriberEmail}
-                                            onChange={(e) => setSubscriberEmail(e.target.value)}
-                                            placeholder="Enter your email address"
-                                            className="flex-1 px-6 py-4 rounded-xl text-gray-800 font-medium focus:outline-none focus:ring-4 focus:ring-[#BFD8FF]"
-                                        />
-                                        <button
-                                            type="submit"
-                                            disabled={submitting}
-                                            className="px-8 py-4 bg-[#FF4040] text-white rounded-xl font-bold hover:bg-[#c03030] transition-colors whitespace-nowrap disabled:opacity-50"
-                                        >
-                                            {submitting ? 'Subscribing...' : 'Subscribe Now'}
-                                        </button>
-                                    </form>
+                            {isVisible('newsNewsletter') && (
+                                <div className="mt-16 bg-gradient-to-r from-[#0B0B3B] to-[#1a1a5e] rounded-3xl p-10 shadow-2xl text-white">
+                                    <div className="max-w-3xl mx-auto text-center">
+                                        <Newspaper className="w-16 h-16 mx-auto mb-6" />
+                                        <h3 className="text-3xl font-bold mb-4">Subscribe to Our Newsletter</h3>
+                                        <p className="text-blue-200 mb-8">
+                                            Get the latest news and updates delivered directly to your inbox
+                                        </p>
+                                        <form onSubmit={handleSubscribe} className="flex flex-col md:flex-row gap-4 max-w-xl mx-auto">
+                                            <input
+                                                type="email"
+                                                required
+                                                value={subscriberEmail}
+                                                onChange={(e) => setSubscriberEmail(e.target.value)}
+                                                placeholder="Enter your email address"
+                                                className="flex-1 px-6 py-4 rounded-xl text-gray-800 font-medium focus:outline-none focus:ring-4 focus:ring-[#BFD8FF]"
+                                            />
+                                            <button
+                                                type="submit"
+                                                disabled={submitting}
+                                                className="px-8 py-4 bg-[#FF4040] text-white rounded-xl font-bold hover:bg-[#c03030] transition-colors whitespace-nowrap disabled:opacity-50"
+                                            >
+                                                {submitting ? 'Subscribing...' : 'Subscribe Now'}
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </section>

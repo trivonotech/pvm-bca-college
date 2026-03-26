@@ -96,12 +96,20 @@ export default function AboutPage() {
                                     </p>
                                     <div className="grid grid-cols-2 gap-6 pt-4">
                                         <div className="bg-[#BFD8FF] p-6 rounded-2xl text-center">
-                                            <div className="text-4xl font-bold text-[#0B0B3B] mb-2">10+</div>
-                                            <div className="text-sm font-semibold text-gray-700">Years of Excellence</div>
+                                            <div className="text-4xl font-bold text-[#0B0B3B] mb-2">
+                                                {content?.about_stat1_number || "10+"}
+                                            </div>
+                                            <div className="text-sm font-semibold text-gray-700">
+                                                {content?.about_stat1_label || "Years of Excellence"}
+                                            </div>
                                         </div>
                                         <div className="bg-[#FFF5F5] p-6 rounded-2xl text-center">
-                                            <div className="text-4xl font-bold text-[#FF4040] mb-2">5000+</div>
-                                            <div className="text-sm font-semibold text-gray-700">Alumni Network</div>
+                                            <div className="text-4xl font-bold text-[#FF4040] mb-2">
+                                                {content?.about_stat2_number || "5000+"}
+                                            </div>
+                                            <div className="text-sm font-semibold text-gray-700">
+                                                {content?.about_stat2_label || "Alumni Network"}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

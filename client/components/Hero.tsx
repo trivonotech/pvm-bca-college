@@ -79,28 +79,6 @@ export function Hero() {
                     </Link>
                 </div>
 
-                {/* Right: Latest News Card - Fixed at bottom right */}
-                <div className="w-full lg:w-auto pointer-events-auto flex justify-center lg:block lg:absolute lg:bottom-8 lg:right-20">
-                    <div className="bg-[#FFF5F5] border border-red-100 p-6 rounded-2xl shadow-xl w-full max-w-sm lg:w-[380px] relative z-20 mt-8 lg:mt-0">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="p-2 bg-red-100 rounded-md text-red-800">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" /><path d="M18 14h-8" /><path d="M15 18h-5" /><path d="M10 6h8v4h-8V6Z" /></svg>
-                            </div>
-                            <h3 className="text-[#592B2B] font-bold text-lg">{content?.hero_news_title || "Latest News"}</h3>
-                        </div>
-                        <p className="text-[#592B2B] text-xs opacity-80 leading-relaxed mb-4 font-medium">
-                            {content?.hero_news_desc || "Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry. Lorem Ipsum Has Been The Industry's Standard Dummy Text Ever Since The 1500s"}
-                        </p>
-                        <div className="flex justify-end">
-                            <Link
-                                to={content?.hero_news_link || "/news"}
-                                className="text-white text-xs font-bold bg-[#A04040] px-6 py-2 rounded-full hover:bg-[#803030] transition-colors shadow-md"
-                            >
-                                More Detail {">>"}
-                            </Link>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
     );

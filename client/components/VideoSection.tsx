@@ -52,8 +52,10 @@ export default function VideoSection() {
     const handlePlay = () => {
         if (content?.video_url?.includes('youtube.com') || content?.video_url?.includes('youtu.be')) {
             iframeRef.current?.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-        } else {
-            videoRef.current?.play().catch(() => { });
+            iframeRef.current?.contentWindow?.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+        } else if (videoRef.current) {
+            videoRef.current.muted = false;
+            videoRef.current.play().catch(() => { });
         }
     };
 
@@ -76,22 +78,22 @@ export default function VideoSection() {
     };
 
     const ytId = isYouTube ? getYouTubeId(content.video_url) : null;
-    const embedUrl = ytId ? `https://www.youtube.com/embed/${ytId}?enablejsapi=1&autoplay=${content.video_autoplay === 'Yes' ? 1 : 0}&loop=${content.video_loop === 'Yes' ? 1 : 0}&playlist=${ytId}&mute=1&controls=${content.video_controls === 'Yes' ? 1 : 0}` : '';
+    const embedUrl = ytId ? `https://www.youtube.com/embed/${ytId}?enablejsapi=1&autoplay=${content.video_autoplay === 'Yes' ? 1 : 0}&loop=${content.video_loop === 'Yes' ? 1 : 0}&playlist=${ytId}&mute=0&controls=${content.video_controls === 'Yes' ? 1 : 0}` : '';
 
     return (
-        <section ref={containerRef} className="py-20 bg-white overflow-hidden">
+        <section ref={containerRef} className="py-10 md:py-20 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="relative rounded-[2.5rem] overflow-hidden border-[12px] border-slate-600/5 bg-slate-900 shadow-2xl aspect-video"
+                    className="relative rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden bg-slate-900 shadow-2xl aspect-video group"
                 >
                     {isYouTube ? (
                         <iframe
                             ref={iframeRef}
                             src={embedUrl}
-                            className="w-full h-full pointer-events-auto"
+                            className="w-full h-full pointer-events-auto scale-[1.01]"
                             allow="autoplay; encrypted-media"
                             allowFullScreen
                         />
@@ -100,12 +102,14 @@ export default function VideoSection() {
                             ref={videoRef}
                             src={content.video_url}
                             loop={content.video_loop === 'Yes'}
-                            muted
                             playsInline
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover"
                             controls={content.video_controls === 'Yes'}
                         />
                     )}
+
+                    {/* Frame Overlay - Ensures no gaps */}
+                    <div className="absolute inset-0 border-[6px] md:border-[12px] border-[#0B0B3B] rounded-[1.5rem] md:rounded-[2.5rem] pointer-events-none z-10 shadow-inner"></div>
 
                     {/* Text Overlay */}
                     {content.video_show_text === 'Yes' && (

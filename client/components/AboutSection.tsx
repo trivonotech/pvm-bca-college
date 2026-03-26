@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import aboutBuilding from '../assets/about-building.png';
 import quoteMark from '../assets/quote-mark.png';
 import { db } from '@/lib/firebase';
@@ -48,9 +49,12 @@ export default function AboutSection() {
         </div>
 
         {/* Call to Action Button */}
-        <button className="bg-gradient-to-r from-[#FF004D] to-[#FF0076] text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all text-sm mb-2 relative z-20">
+        <Link 
+          to={content?.about_button_link || "/about"} 
+          className="bg-gradient-to-r from-[#FF004D] to-[#FF0076] text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all text-sm mb-2 relative z-30"
+        >
           Read More About The Institute {">>"}
-        </button>
+        </Link>
 
       </div>
 

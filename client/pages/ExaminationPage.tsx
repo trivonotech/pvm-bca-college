@@ -60,7 +60,7 @@ export default function ExaminationPage() {
         <div className="min-h-screen bg-white font-poppins">
             <Header />
 
-            {isVisible('examinationHero') && (
+            {isVisible('examinationsHero') && (
                 <section className="relative w-full text-white py-20 overflow-hidden">
                     {content?.images?.hero_bg ? (
                         <>
@@ -97,7 +97,7 @@ export default function ExaminationPage() {
                 </section>
             )}
 
-            {isVisible('examinationNotices') && (
+            {isVisible('examNotices') && (
                 <section className="py-20 bg-[#FDFDFF]">
                     <div className="container mx-auto px-4">
                         <div className="max-w-6xl mx-auto">
@@ -237,23 +237,25 @@ export default function ExaminationPage() {
                             </div>
 
                             {/* Quick Links */}
-                            <div className="bg-gradient-to-r from-[#0B0B3B] to-[#1a1a5e] rounded-3xl p-10 shadow-2xl text-white">
-                                <h3 className="text-2xl font-bold mb-8 text-center">Quick Links</h3>
-                                <div className="grid md:grid-cols-3 gap-6">
-                                    <button className="bg-white/10 hover:bg-white/20 rounded-2xl p-6 transition-colors text-center">
-                                        <Download className="w-10 h-10 mx-auto mb-3" />
-                                        <div className="font-bold">Download Hall Ticket</div>
-                                    </button>
-                                    <button className="bg-white/10 hover:bg-white/20 rounded-2xl p-6 transition-colors text-center">
-                                        <FileText className="w-10 h-10 mx-auto mb-3" />
-                                        <div className="font-bold">View Time Table</div>
-                                    </button>
-                                    <button className="bg-white/10 hover:bg-white/20 rounded-2xl p-6 transition-colors text-center">
-                                        <Bell className="w-10 h-10 mx-auto mb-3" />
-                                        <div className="font-bold">Exam Guidelines</div>
-                                    </button>
+                            {isVisible('examQuickLinks') && (
+                                <div className="bg-gradient-to-r from-[#0B0B3B] to-[#1a1a5e] rounded-3xl p-10 shadow-2xl text-white">
+                                    <h3 className="text-2xl font-bold mb-8 text-center">Quick Links</h3>
+                                    <div className="grid md:grid-cols-3 gap-6">
+                                        <button className="bg-white/10 hover:bg-white/20 rounded-2xl p-6 transition-colors text-center">
+                                            <Download className="w-10 h-10 mx-auto mb-3" />
+                                            <div className="font-bold">Download Hall Ticket</div>
+                                        </button>
+                                        <button className="bg-white/10 hover:bg-white/20 rounded-2xl p-6 transition-colors text-center">
+                                            <FileText className="w-10 h-10 mx-auto mb-3" />
+                                            <div className="font-bold">View Time Table</div>
+                                        </button>
+                                        <button className="bg-white/10 hover:bg-white/20 rounded-2xl p-6 transition-colors text-center">
+                                            <Bell className="w-10 h-10 mx-auto mb-3" />
+                                            <div className="font-bold">Exam Guidelines</div>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </section>

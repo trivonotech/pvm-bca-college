@@ -233,23 +233,6 @@ export default function AdmissionsPage() {
                             </div>
                         </div>
 
-                        {/* TFWS */}
-                        <div className="md:col-span-2 space-y-4 pt-8 border-t border-gray-100">
-                            <h3 className="text-2xl font-semibold text-[#333]">
-                                Tuition Fee Waiver Scheme (TFWS)
-                            </h3>
-                            <div className="text-gray-600 space-y-4">
-                                <ol className="list-decimal pl-5 space-y-2 leading-relaxed marker:font-bold marker:text-[#0B0B3B]">
-                                    <li>Under the TFW scheme, students do not have to pay tuition fees (Rs. 60,000 to Rs. 1,00,000 approx) in SFI.</li>
-                                    <li>5% of total seats shall be filled by TFW scheme, e.g. 60 seats then 3 seats shall be filled by TFWS.</li>
-                                    <li>Students whose parent's income is less than Rs. 6 lakh per year are eligible for TFWS.</li>
-                                    <li>Admission is strictly based on merit, as determined by the admissions committee.</li>
-                                    <li>The TFW scheme shall be applicable for the complete duration of the course (4 Years).</li>
-                                    <li>To get the benefits of the TFW Scheme, the candidate has to submit the income certificate issued after 31st March from either 'Mamlatdar' or "Taluka Development Officer (TDO)" or 'the Collector (Jan Seva Kendra)' at the time of application form filling registration for admission.</li>
-                                    <li>No other document shall be considered valid (e.g. an Income tax return or a Certificate issued by the 'Sarpanch').</li>
-                                </ol>
-                            </div>
-                        </div>
 
                         {/* SEBC/OBC */}
                         <div className="md:col-span-2 space-y-4 pt-8 border-t border-gray-100">
