@@ -130,6 +130,16 @@ export default function Footer() {
             <p>
               © {new Date().getFullYear()} {settings.siteName}. All rights reserved.
             </p>
+            <p className="text-center">
+              Developed by{' '}
+              <a 
+                href="https://www.yashvachhani.com" 
+                target="_blank" 
+                className="text-white hover:text-blue-300 font-medium transition-colors"
+              >
+                Yash Vachhani
+              </a>
+            </p>
             <div className="flex gap-6">
               <a href="#" className="hover:text-white">Privacy Policy</a>
               <a href="#" className="hover:text-white">Terms & Conditions</a>
