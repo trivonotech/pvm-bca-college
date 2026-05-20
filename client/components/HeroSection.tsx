@@ -118,7 +118,7 @@ export default function HeroSection() {
           <div className="relative h-80 md:h-96 lg:h-auto flex items-center justify-center">
             <img
               src={content.hero}
-              alt="Student character illustration"
+              alt="BCA students graduating successfully from PVM BCA College Keshod"
               className="w-full h-full object-contain"
             />
           </div>

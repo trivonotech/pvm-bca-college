@@ -45,7 +45,7 @@ export default function AboutPage() {
                             <div className="absolute inset-0 z-0">
                                 <img
                                     src={content.images.hero_bg}
-                                    alt="Hero"
+                                    alt="PVM BCA College Keshod Campus Background"
                                     className="w-full h-full object-cover"
                                 />
                                 <div className="absolute inset-0 bg-black/60"></div>
@@ -118,7 +118,7 @@ export default function AboutPage() {
                                     <div className="bg-gradient-to-br from-[#BFD8FF] to-[#E5E7EB] rounded-3xl p-8 shadow-2xl">
                                         <img
                                             src={content?.images?.campus_image || "https://images.unsplash.com/photo-1562774053-701939374585?w=800&auto=format&fit=crop"}
-                                            alt="Campus"
+                                            alt="PVM BCA College Keshod Modern Campus Building and Infrastructure"
                                             className="w-full h-80 object-cover rounded-2xl shadow-lg"
                                         />
                                     </div>

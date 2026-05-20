@@ -125,7 +125,7 @@ export default function ContactPage() {
                             <div className="absolute inset-0 z-0">
                                 <img
                                     src={content.images.hero_bg}
-                                    alt="Hero"
+                                    alt="PVM BCA College Keshod Campus Contact Details background"
                                     className="w-full h-full object-cover"
                                 />
                                 <div className="absolute inset-0 bg-black/60"></div>
