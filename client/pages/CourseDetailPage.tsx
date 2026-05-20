@@ -22,6 +22,7 @@ import { db } from '@/lib/firebase';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { updateSEOMeta } from '@/utils/seo';
 
 export default function CourseDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -31,6 +32,16 @@ export default function CourseDetailPage() {
     const [loading, setLoading] = useState(true);
     const [activeSem, setActiveSem] = useState<number>(0);
     const [mobileActiveSem, setMobileActiveSem] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (!course) return;
+        updateSEOMeta({
+            title: `${course.name} (${course.code || ''}) | Courses | PVM BCA College Keshod`,
+            description: `${course.description?.slice(0, 155) || `Learn about ${course.name} at PVM BCA College Keshod. Check eligibility, syllabus, fees, and admission details.`}`,
+            image: course.image || '/favicon.png',
+            url: window.location.href
+        });
+    }, [course]);
 
     useEffect(() => {
         if (mobileActiveSem !== null) {

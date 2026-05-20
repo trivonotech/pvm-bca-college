@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Calendar, User, ArrowLeft, Tag, Newspaper } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
+import { updateSEOMeta } from '@/utils/seo';
 
 interface NewsArticle {
     id: string;
@@ -41,6 +42,18 @@ export default function NewsDetailPage() {
         }
     });
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!article) return;
+        const plainTextContent = article.content.replace(/[#*`\n]/g, ' ').slice(0, 155);
+        updateSEOMeta({
+            title: `${article.title} | News & Updates | PVM BCA College Keshod`,
+            description: `${plainTextContent}... Read more about this news update on bcakeshod.com.`,
+            image: article.imageUrl || '/favicon.png',
+            url: window.location.href,
+            type: 'article'
+        });
+    }, [article]);
 
     useEffect(() => {
         const fetchArticle = async () => {

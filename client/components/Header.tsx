@@ -109,7 +109,7 @@ export default function Header() {
           {/* Logo - Left */}
           <div className="flex-shrink-0 z-10">
             <Link to="/">
-              <img src={dynamicLogo || logo} alt="Institute Logo" className="h-16 w-auto object-contain" />
+              <img src={dynamicLogo || logo} alt="PVM BCA College Keshod Logo" className="h-16 w-auto object-contain" />
             </Link>
           </div>
 

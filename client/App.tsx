@@ -48,6 +48,71 @@ import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 
+import { updateSEOMeta } from "@/utils/seo";
+
+const ROUTE_META_MAP: Record<string, { title: string; description: string; keywords?: string; image?: string }> = {
+  "/": {
+    title: "PVM BCA College Keshod | Best Computer Science College Gujarat",
+    description: "Join PVM BCA College Keshod – Gujarat's leading BCA & Computer Science college. Experienced faculty, modern labs, 100% placement support. Apply for 2025-26 admission now. Call: 96874 51774",
+    keywords: "BCA College Keshod, PVM BCA College, Computer Science College Keshod, BCA Admission 2025 Gujarat, BCA College Junagadh, Best BCA College Gujarat, pvmbcacollege, bcakeshod.com",
+    image: "/images/pvm-bca-college-keshod-og.jpg"
+  },
+  "/about": {
+    title: "About PVM BCA College Keshod | Top Faculty & Infrastructure",
+    description: "Learn about PVM BCA College Keshod, Gujarat. Read our mission, vision, history, and meet our experienced computer science faculty team.",
+    keywords: "About PVM College, PVM BCA College Keshod, Faculty, Infrastructure, Mission, Vision",
+    image: "/images/pvm-bca-college-keshod-og.jpg"
+  },
+  "/academics": {
+    title: "Academics & BCA Courses | PVM BCA College Keshod",
+    description: "Explore academics and course structures at PVM BCA College Keshod. We offer a comprehensive BCA program with practical-oriented labs.",
+    keywords: "BCA course, BCA Syllabus, Computer Science education, PVM College academics",
+    image: "/images/pvm-bca-college-keshod-og.jpg"
+  },
+  "/admissions": {
+    title: "BCA Admission 2025-26 | PVM College Keshod Gujarat",
+    description: "Admission Open for BCA 2025-26 at PVM College Keshod, Gujarat. Check eligibility, admission process, fees structure, and apply online.",
+    keywords: "BCA Admission 2025, PVM College Admissions, Eligibility criteria, How to apply",
+    image: "/images/pvm-bca-college-keshod-og.jpg"
+  },
+  "/student-life": {
+    title: "Student Life & Campus Activities | PVM BCA College Keshod",
+    description: "Experience vibrant campus life at PVM BCA College Keshod. Discover sports events, tech fests, culture programs, and student activities.",
+    keywords: "Student Life, Campus Life, Sports Events, Tech Fest, Extracurricular activities",
+    image: "/images/pvm-bca-college-keshod-og.jpg"
+  },
+  "/examinations": {
+    title: "Examinations & Results | PVM BCA College Keshod",
+    description: "Check exam schedules, timetables, internal results, and notices for BCA semesters at PVM BCA College Keshod.",
+    keywords: "BCA Exam, Exam Schedule, Results, PVM College Exam Notices",
+    image: "/images/pvm-bca-college-keshod-og.jpg"
+  },
+  "/placements": {
+    title: "BCA Placements & Careers | PVM BCA College Keshod",
+    description: "Excellent placement record at PVM BCA College Keshod. Industry partners, training programs, and career support to help you land top tech jobs.",
+    keywords: "BCA placement, Careers, Job opportunities, PVM Placement Cell",
+    image: "/images/pvm-bca-college-keshod-og.jpg"
+  },
+  "/news": {
+    title: "Latest News & Events | PVM BCA College Keshod",
+    description: "Stay updated with the latest news, announcements, exam notices, and event highlights from PVM BCA College Keshod.",
+    keywords: "Latest News, Announcements, Events, Updates, PVM College Notices",
+    image: "/images/pvm-bca-college-keshod-og.jpg"
+  },
+  "/student-corner": {
+    title: "Student Corner & Study Resources | PVM BCA College",
+    description: "Access study materials, previous papers, student notices, and key academic resources for BCA at PVM College Keshod.",
+    keywords: "Student Resources, Study materials, Previous papers, Student Corner",
+    image: "/images/pvm-bca-college-keshod-og.jpg"
+  },
+  "/contact": {
+    title: "Contact Us | PVM BCA College Keshod Gujarat",
+    description: "Get in touch with PVM BCA College Keshod. Contact details, phone number: 96874 51774, email, and Google map location for our Veraval Road campus.",
+    keywords: "Contact PVM College, Address, Phone Number, Email, Google Map Location",
+    image: "/images/pvm-bca-college-keshod-og.jpg"
+  }
+};
+
 const PageContentManager = lazy(() => import("./pages/admin/PageContentManager"));
 const AdmissionsManager = lazy(() => import("./pages/admin/AdmissionsManager"));
 const CoursesManager = lazy(() => import("./pages/admin/CoursesManager"));
@@ -82,21 +147,36 @@ function AppContent() {
     const siteName = siteSettings.siteName || 'PVM BCA College';
     const siteLogo = siteSettings.siteLogo;
 
-    // Generate readable page title from pathname
-    let pageTitle = "Home";
-    if (pathname !== "/") {
-      const parts = pathname.split('/').filter(Boolean);
-      const lastPart = parts[parts.length - 1];
-      pageTitle = lastPart
-        .split(/[-_]/)
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+    // Check if the current route has static SEO metadata
+    const staticMeta = ROUTE_META_MAP[pathname];
+    if (staticMeta) {
+      updateSEOMeta({
+        title: staticMeta.title,
+        description: staticMeta.description,
+        keywords: staticMeta.keywords,
+        image: staticMeta.image || siteLogo || '/favicon.png'
+      });
+    } else {
+      // Generate readable page title from pathname for other pages (like /admin or fallback)
+      let pageTitle = "Home";
+      if (pathname !== "/") {
+        const parts = pathname.split('/').filter(Boolean);
+        const lastPart = parts[parts.length - 1];
+        pageTitle = lastPart
+          .split(/[-_]/)
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
 
-      // Special cases
-      if (pathname.includes('/admin')) pageTitle = `Admin - ${pageTitle}`;
+        // Special cases
+        if (pathname.includes('/admin')) pageTitle = `Admin - ${pageTitle}`;
+      }
+
+      updateSEOMeta({
+        title: `${pageTitle} | ${siteName}`,
+        description: `Welcome to the ${pageTitle} page of ${siteName}.`,
+        image: siteLogo || '/favicon.png'
+      });
     }
-
-    document.title = `${pageTitle} | ${siteName}`;
 
     // Update Favicon if logo exists, otherwise use default
     const favicon = document.getElementById('favicon-link') as HTMLLinkElement;

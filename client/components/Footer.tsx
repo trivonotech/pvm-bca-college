@@ -34,7 +34,7 @@ export default function Footer() {
           {/* Logo and Address */}
           <div className="space-y-6 col-span-2 md:col-span-1 lg:col-span-1">
             <div className="flex items-center gap-3">
-              <img src={settings.footerLogo || settings.siteLogo || logo} alt="Logo" className="h-12 w-auto object-contain" />
+              <img src={settings.footerLogo || settings.siteLogo || logo} alt="PVM BCA College Keshod Logo" className="h-12 w-auto object-contain" />
             </div>
 
             <div>

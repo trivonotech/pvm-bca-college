@@ -112,7 +112,7 @@ export default function AdmissionsPage() {
                             <div className="absolute inset-0 z-0">
                                 <img
                                     src={heroContent.images.hero_bg}
-                                    alt="Hero"
+                                    alt="PVM BCA College Keshod Campus Admissions and Scholarships background"
                                     className="w-full h-full object-cover"
                                 />
                                 <div className="absolute inset-0 bg-black/60"></div>

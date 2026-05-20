@@ -1,50 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://pvm-bca-college.vercel.app/</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://www.bcakeshod.com/</loc>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://pvm-bca-college.vercel.app/about</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://www.bcakeshod.com/about</loc>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pvm-bca-college.vercel.app/academics</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://www.bcakeshod.com/academics</loc>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pvm-bca-college.vercel.app/admissions</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://www.bcakeshod.com/admissions</loc>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://pvm-bca-college.vercel.app/news</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://www.bcakeshod.com/news</loc>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pvm-bca-college.vercel.app/student-life</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://www.bcakeshod.com/student-life</loc>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://pvm-bca-college.vercel.app/placements</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://www.bcakeshod.com/examinations</loc>
+    <lastmod>2026-05-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.bcakeshod.com/placements</loc>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pvm-bca-college.vercel.app/contact</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://www.bcakeshod.com/student-corner</loc>
+    <lastmod>2026-05-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.bcakeshod.com/contact</loc>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

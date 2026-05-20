@@ -62,7 +62,7 @@ export default function AboutSection() {
       <div className="absolute bottom-0 left-0 w-full pointer-events-none opacity-20 md:opacity-25">
         <img
           src={aboutBuilding}
-          alt="Institute Building"
+          alt="PVM BCA College Keshod Campus Building Illustration"
           className="w-full max-w-[500px] md:max-w-[700px] object-contain ml-0 md:ml-10"
         />
       </div>

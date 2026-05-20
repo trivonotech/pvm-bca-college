@@ -4,11 +4,23 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { updateSEOMeta } from '@/utils/seo';
 
 export default function DynamicPage() {
     const { slug } = useParams<{ slug: string }>();
     const [page, setPage] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!page) return;
+        const plainTextContent = page.content?.replace(/[#*`\n]/g, ' ').slice(0, 155);
+        updateSEOMeta({
+            title: `${page.title} | Administration | PVM BCA College Keshod`,
+            description: `${plainTextContent || `Learn about ${page.title} under administration department at PVM BCA College Keshod.`}`,
+            image: page.image || '/favicon.png',
+            url: window.location.href
+        });
+    }, [page]);
 
     useEffect(() => {
         const fetchPage = async () => {
