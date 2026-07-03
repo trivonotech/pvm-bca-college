@@ -192,9 +192,9 @@ export default function DynamicPageManager() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredPages.map(page => (
                     <div key={page.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
-                        <div className="h-40 bg-gray-100 relative">
+                        <div className="h-40 bg-gray-50 relative overflow-hidden rounded-t-2xl">
                             {page.image ? (
-                                <img src={page.image} alt={page.title} className="w-full h-full object-cover" />
+                                <img src={page.image} alt={page.title} className="w-full h-full object-cover object-[center_-15px] bg-white rounded-t-2xl" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                                     <FileText className="w-12 h-12" />
@@ -256,8 +256,8 @@ export default function DynamicPageManager() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Profile Photo (Portrait Mode Recommended)</label>
                         {imagePreview ? (
-                            <div className="relative inline-block border-2 border-dashed border-gray-300 rounded-xl p-2">
-                                <img src={imagePreview} alt="Preview" className="h-32 object-cover rounded-lg" />
+                            <div className="relative inline-block border-2 border-dashed border-gray-300 rounded-xl p-2 bg-white">
+                                <img src={imagePreview} alt="Preview" className="h-32 object-cover object-[center_-15px] bg-white rounded-lg" />
                                 <button
                                     type="button"
                                     onClick={() => {

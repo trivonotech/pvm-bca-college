@@ -49,33 +49,35 @@ export default function TopStudents() {
                 </h2>
 
                 {/* Students Grid - Desktop */}
-                <div className="hidden md:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="hidden md:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                     {students.map((student, index) => (
                         <div
                             key={index}
-                            className="rounded-3xl border-2 border-blue-400 overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
+                            className="flex flex-col items-center p-4 transition-all duration-300 hover:-translate-y-2 group"
                         >
-                            <div className="h-40 md:h-48 bg-gradient-to-br from-blue-200 to-blue-300 relative">
-                                {student.image ? (
-                                    <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-blue-600">
-                                        {student.name[0]}
-                                    </div>
-                                )}
-                                <div className="absolute top-3 right-3 bg-gray-900 text-white rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-bold text-xs md:text-sm">
+                            <div className="relative w-36 h-36 md:w-44 md:h-44 mb-6">
+                                <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-200 to-blue-300 overflow-hidden shadow-lg border-4 border-blue-100 group-hover:border-blue-400 transition-colors duration-300">
+                                    {student.image ? (
+                                        <img src={student.image} alt={student.name} className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-5xl font-bold text-blue-600">
+                                            {student.name[0]}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="absolute -top-1 -right-1 bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm shadow-md transition-transform duration-300 group-hover:scale-110">
                                     {student.rank}
                                 </div>
                             </div>
 
-                            <div className="bg-blue-50 p-4 md:p-6">
-                                <h4 className="text-xl md:text-2xl font-bold text-gray-900 text-center mb-2">
+                            <div className="text-center w-full">
+                                <h4 className="text-lg md:text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors duration-300">
                                     {student.name}
                                 </h4>
-                                <p className="text-center text-sm md:text-base font-medium text-gray-800 mb-2">
+                                <p className="text-sm font-semibold text-blue-600 mb-1">
                                     {student.course}
                                 </p>
-                                <p className="text-center text-xs md:text-sm text-gray-700">
+                                <p className="text-xs md:text-sm text-gray-500 font-medium max-w-[220px] mx-auto">
                                     {student.achievement}
                                 </p>
                             </div>
@@ -92,7 +94,7 @@ export default function TopStudents() {
                                 <div className="relative w-24 h-24 mb-3">
                                     <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-200 to-blue-300 overflow-hidden shadow-md">
                                         {student.image ? (
-                                            <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
+                                            <img src={student.image} alt={student.name} className="w-full h-full object-cover object-top" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-blue-600">
                                                 {student.name[0]}
@@ -118,7 +120,7 @@ export default function TopStudents() {
                                 <div className="relative w-24 h-24 mb-3">
                                     <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-200 to-blue-300 overflow-hidden shadow-md">
                                         {student.image ? (
-                                            <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
+                                            <img src={student.image} alt={student.name} className="w-full h-full object-cover object-top" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-blue-600">
                                                 {student.name[0]}

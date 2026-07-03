@@ -65,12 +65,12 @@ export default function DynamicPage() {
 
                             {/* Left Side: Profile Photo */}
                             <div className="md:col-span-4 bg-[#f8fafc] p-8 flex flex-col items-center justify-start border-r border-gray-100">
-                                <div className="w-64 h-64 md:w-full md:h-auto md:aspect-square rounded-2xl overflow-hidden shadow-md mb-6 border-4 border-white">
+                                <div className="w-64 h-64 md:w-full md:h-auto md:aspect-square rounded-2xl overflow-hidden shadow-md mb-6 border-4 border-white bg-white">
                                     {page.image ? (
                                         <img
                                             src={page.image}
                                             alt={page.title}
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-full object-cover object-[center_-15px] rounded-[12px] bg-white"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-gray-200">

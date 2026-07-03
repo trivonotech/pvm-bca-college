@@ -259,7 +259,7 @@ export default function PlacementsManager() {
                                 <div className="flex items-center gap-4 mb-4">
                                     <div className="w-16 h-16 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center">
                                         {item.image ? (
-                                            <img src={item.image} alt={item.studentName} className="w-full h-full object-cover" />
+                                            <img src={item.image} alt={item.studentName} className="w-full h-full object-cover object-top" />
                                         ) : (
                                             <Briefcase className="w-8 h-8 text-gray-400" />
                                         )}

@@ -220,9 +220,9 @@ export default function StudentsManager() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {filteredStudents.map((student) => (
                         <div key={student.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                            <div className="h-40 bg-gradient-to-br from-yellow-200 to-yellow-300 relative">
+                            <div className="h-40 bg-gradient-to-br from-yellow-200 to-yellow-300 relative rounded-t-2xl overflow-hidden">
                                 {student.image ? (
-                                    <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
+                                    <img src={student.image} alt={student.name} className="w-full h-full object-cover object-top rounded-t-2xl" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-yellow-600">
                                         {student.name[0]}

@@ -273,7 +273,7 @@ export default function PlacementsPage() {
                                             <div className="h-2 bg-gradient-to-r from-[#0B0B3B] via-[#FF4040] to-[#FACC15]"></div>
                                             <div className="p-8 flex-1 flex flex-col">
                                                 {story.image ? (
-                                                    <img src={story.image} alt={story.studentName} className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-[#BFD8FF]" />
+                                                    <img src={story.image} alt={story.studentName} className="w-24 h-24 rounded-full mx-auto mb-4 object-cover object-top border-4 border-[#BFD8FF]" />
                                                 ) : (
                                                     <div className="w-24 h-24 rounded-full mx-auto mb-4 bg-gray-200 flex items-center justify-center text-gray-400">
                                                         <User className="w-12 h-12" />
