@@ -67,6 +67,7 @@ export interface Faculty {
     email?: string;
     phone?: string;
     image?: string;
+    order?: number;
     createdAt: string;
     updatedAt: string;
 }

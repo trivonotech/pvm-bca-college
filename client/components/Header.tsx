@@ -54,7 +54,13 @@ export default function Header() {
 
   const navItems = [
     { label: 'Home', href: '/', visible: true },
-    { label: 'About', href: '/about', visible: isVisible('aboutHero') },
+    {
+      label: 'About Us',
+      submenu: [
+        { label: 'About College', href: '/about', visible: isVisible('aboutHero') },
+        { label: 'Our Staff', href: '/about/staff', visible: true },
+      ].filter(item => item.visible !== false)
+    },
 
     {
       label: 'Academics',
